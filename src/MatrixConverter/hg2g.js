@@ -72,6 +72,8 @@ for(var i =0; i < m.length; i++) {
 
 	
 }
+
+// Print the result just for testing
 console.log(JSON.stringify(jsonG));
 
 /*
