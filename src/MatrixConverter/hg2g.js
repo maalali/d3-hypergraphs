@@ -15,17 +15,29 @@ var hg = {
 
 // Example #2
 var hg2 = {
-	"V":8,
-	"E":6,
-	"K":27,
+	"V":5,
+	"E":2,
+	"K":8,
 	"Matrix":[
 					["a", [ 1, 1, 1, 1, 0]],
 					["b", [ 0, 1, 1, 1, 1]]
 				]
 };
 
+// Example #3
+var hg3 = {
+	"V":9,
+	"E":2,
+	"K":14,
+	"Matrix":[
+					["a", [ 1, 1, 1, 1, 0, 0, 0, 0, 0 ]],
+					["b", [ 0, 0, 1, 1, 1, 1, 1, 0, 0 ]],
+					["c", [ 0, 0, 0, 0, 1, 1, 1, 1, 1 ]]
+				]
+};
+
 // Get the matrix from the JSON object using one of the examples above
-var m = hg2.Matrix;
+var m = hg3.Matrix;
 var edgeName;
 var edgeVector;
 
@@ -45,11 +57,19 @@ for(var i =0; i < m.length; i++) {
 	for (var col = 0; col < edgeVector.length; col++) {
 		
 		// Each vertex name is a number starting from 1 to |V|
-		jsonG.nodes[col] = {"name": (col).toString() , "group": (col).toString()}
+		if(jsonG.nodes[col] == undefined) {
+			
+			jsonG.nodes[col] = {"name": (col).toString() , "group": (col).toString(), "HE": [], "fontsize":"45px", "title":null};
+		
+		 } 
 		
 		
 		// create the necessary links for the current vertex
 		if(edgeVector[col] == 1) {
+
+			// Add the current hyperedge's name to the node's attribute: hyperedges to indicate that the current 
+			// node is a member of the added hyperedge
+			jsonG.nodes[col].HE.push(edgeName);
 
 			// Go through the next verteces to check for relations
 			// Note that all verteces in one edge should be related forming a complete graph (a clique)
