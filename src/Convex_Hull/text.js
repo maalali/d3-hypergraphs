@@ -1,6 +1,5 @@
-//orig for tesxt.js -----> f2..csv
-//stroke: #999;
-
+//<![CDATA[ 
+$(window).load(function(){
 var vertices = new Array();
 var width = 960,
     height = 500;
@@ -10,14 +9,15 @@ var force = d3.layout.force().size([width, height]);
 var svg = d3.select("body").append("svg").attr("width", width).attr("height", height).attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 $(function() {
 
+    // Example #2
+    var json = "{\"nodes\":[{\"name\":\"0\",\"group\":\"0\",\"HE\":[\"a\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"1\",\"group\":\"1\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"2\",\"group\":\"2\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"3\",\"group\":\"3\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"4\",\"group\":\"4\",\"HE\":[\"b\"],\"fontsize\":\"45px\",\"title\":null}],\"links\":[{\"source\":0,\"target\":1,\"value\":1},{\"source\":0,\"target\":2,\"value\":1},{\"source\":0,\"target\":3,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":3,\"value\":1},{\"source\":1,\"target\":4,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":4,\"value\":1},{\"source\":3,\"target\":4,\"value\":1}]}";
+    
+    // Example #3
+    //var json = "{\"nodes\":[{\"name\":\"0\",\"group\":\"0\",\"HE\":[\"a\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"1\",\"group\":\"1\",\"HE\":[\"a\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"2\",\"group\":\"2\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"3\",\"group\":\"3\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"4\",\"group\":\"4\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"5\",\"group\":\"5\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"6\",\"group\":\"6\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"7\",\"group\":\"7\",\"HE\":[\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"8\",\"group\":\"8\",\"HE\":[\"c\"],\"fontsize\":\"45px\",\"title\":null}],\"links\":[{\"source\":0,\"target\":1,\"value\":1},{\"source\":0,\"target\":2,\"value\":1},{\"source\":0,\"target\":3,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":4,\"value\":1},{\"source\":2,\"target\":5,\"value\":1},{\"source\":2,\"target\":6,\"value\":1},{\"source\":3,\"target\":4,\"value\":1},{\"source\":3,\"target\":5,\"value\":1},{\"source\":3,\"target\":6,\"value\":1},{\"source\":4,\"target\":5,\"value\":1},{\"source\":4,\"target\":6,\"value\":1},{\"source\":5,\"target\":6,\"value\":1},{\"source\":4,\"target\":5,\"value\":1},{\"source\":4,\"target\":6,\"value\":1},{\"source\":4,\"target\":7,\"value\":1},{\"source\":4,\"target\":8,\"value\":1},{\"source\":5,\"target\":6,\"value\":1},{\"source\":5,\"target\":7,\"value\":1},{\"source\":5,\"target\":8,\"value\":1},{\"source\":6,\"target\":7,\"value\":1},{\"source\":6,\"target\":8,\"value\":1},{\"source\":7,\"target\":8,\"value\":1}]}";
 
-       
-          //color group of nodes only
-    var json = "{\"nodes\":[{\"name\":\"v2\",\"group\":1,\"group\":2,\"fontsize\":\"10px\",\"title\":\"E0\"},{\"name\":\"v3\",\"group\":1,\"fontsize\":\"10px\",\"title\":\"E1\"},{\"name\":\"v7\",\"group\":1,\"fontsize\":\"10px\",\"title\":\"E2\"},{\"name\":\"v8\",\"group\":1,\"fontsize\":\"10px\",\"title\":\"E3\"},{\"name\":\"v10\",\"group\":1,\"fontsize\":\"10px\",\"title\":\"E4\"},{\"name\":\"v4\",\"group\":2,\"fontsize\":\"10px\",\"title\":\"E5\"},{\"name\":\"v5\",\"group\":2,\"fontsize\":\"10px\",\"title\":\"E6\"},{\"name\":\"v11\",\"group\":3,\"fontsize\":\"10px\",\"title\":\"E7\"},{\"name\":\"v12\",\"group\":3,\"fontsize\":\"10px\",\"title\":\"E8\"},{\"name\":\"v13\",\"group\":3,\"fontsize\":\"10px\",\"title\":\"E9\"},{\"name\":\"v14\",\"group\":2,\"fontsize\":\"10px\",\"title\":\"E10\"}],\"links\":[{\"source\":0,\"target\":3,\"value\":1},{\"source\":0,\"target\":4,\"value\":1},{\"source\":0,\"target\":5,\"value\":1},{\"source\":0,\"target\":6,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":4,\"value\":1},{\"source\":2,\"target\":1,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":3,\"target\":0,\"value\":1},{\"source\":3,\"target\":2,\"value\":1},{\"source\":4,\"target\":0,\"value\":1},{\"source\":4,\"target\":1,\"value\":1},{\"source\":5,\"target\":0,\"value\":1},{\"source\":5,\"target\":4,\"value\":1},{\"source\":5,\"target\":6,\"value\":1},{\"source\":5,\"target\":7,\"value\":1},{\"source\":5,\"target\":10,\"value\":1},{\"source\":6,\"target\":0,\"value\":1},{\"source\":6,\"target\":0,\"value\":1},{\"source\":6,\"target\":4,\"value\":1},{\"source\":6,\"target\":5,\"value\":1},{\"source\":6,\"target\":7,\"value\":1},{\"source\":6,\"target\":10,\"value\":1},{\"source\":7,\"target\":5,\"value\":1},{\"source\":7,\"target\":6,\"value\":1},{\"source\":7,\"target\":8,\"value\":1},{\"source\":7,\"target\":9,\"value\":1},{\"source\":8,\"target\":7,\"value\":1},{\"source\":8,\"target\":9,\"value\":1},{\"source\":9,\"target\":7,\"value\":1},{\"source\":9,\"target\":8,\"value\":1},{\"source\":10,\"target\":5,\"value\":1},{\"source\":10,\"target\":6,\"value\":1}]}";
 
 
     json = htmlDecode(json);
-
 
     json = $.parseJSON(json);
 
@@ -26,8 +26,8 @@ $(function() {
 
     force.nodes(json.nodes).links(json.links).gravity(0.05).linkDistance(120).charge(-200).start();
 
-    var node = svg.selectAll(".node").data(json.nodes).enter().append("g").attr("class", "node").attr("grp", function(d) {
-        return (d.group)
+    var node = svg.selectAll(".node").data(json.nodes).enter().append("g").attr("class", "node").attr("hyperedges", function(d) {
+        return (d.HE)
     });
     var link = svg.selectAll(".link").data(json.links).enter().append("line").attr("class", "link").style("stroke-opacity", "0.2");
 
@@ -64,16 +64,57 @@ $(function() {
         vertices.push(new Array(cx[i], cy[i]));
     });
 
-    var nodes = vertices.map(Object);
-    //console.log(node[0]);
-//***********************************************************************************
-    //var groups = d3.nest().key(function(d) {
+    //var nodes = vertices.map(Object);
+    // var groups = d3.nest().key(function(d) {
 
-    var groups = d3.nest().key(function(d) {
-        //console.log($(d).attr("grp"));
-        return $(d).attr("grp");
-    }).entries(node[0]);
-        
+    //    //console.log(d);
+    //     return $(d).attr("grp");
+    // }).entries(node[0]);
+    // console.log(node[0]);
+
+    //console.log(node[0]);
+    //console.log(groups);
+
+    //*****************
+    // Buidling the above map manually without using the nest function
+    var groups = [];        // The final groups map
+    var keys = [];          // Keys = the names of hyperedges
+    var groupsObj = {};     // A temp object to hold grouped nodes. 
+                            // This is used to utilize the hashtable property in JavaScript so we don't have to check for duplicate keys
+
+    // Loop through all nodes
+    node[0].forEach(function(n) { 
+
+        // Get the each node's hyperedges list in which they belong to
+        keys = ($(n).attr("hyperedges")).split(",");
+
+        // Add each key to our groups. Each key is a hyperedge
+        keys.forEach(function(k) { 
+
+            // Existing key
+            if(groupsObj[k] != undefined) {
+
+                // Add the current node to the key (i.e. to the hyperedge)
+                groupsObj[k].values.push(n);
+            } 
+            else // A new key
+            {
+                // Create a new key
+                groupsObj[k] = {"key": k, "values": []};
+
+                // Add the current node to the key (i.e. to the hyperedge)
+                groupsObj[k].values.push(n);
+            }
+        })
+    })
+
+    // Convert the list of objects into an array
+    for(var i in groupsObj) {
+
+        groups.push(groupsObj[i]);
+    }
+    //****
+
     var getRadius = function(x,y,d) {
         var margin = 10;
         for(var i in d.values) {
@@ -92,6 +133,7 @@ $(function() {
         }));
         if(corners.length == 0) {return "";}
         
+        //console.log(corners);
         var x1 = parseInt(corners[corners.length - 1][0]);
         var y1 = parseInt(corners[corners.length - 1][1]);
         var x2 = parseInt(corners[0][0]);
@@ -116,7 +158,9 @@ $(function() {
             var dx = (x2-x1);
             var dy = (y2-y1);
             var d = Math.sqrt(dx*dx + dy*dy);
-            console.log(d);
+           
+           // console.log(d);  
+
             var calpha = (r1 - r2)/d;
             var salpha = Math.sqrt(1-(calpha*calpha));
             var x1p = x1 + (r1/d * ( calpha * dx + salpha * dy));
@@ -129,7 +173,7 @@ $(function() {
         return ret;
     };
 
-//key
+    
     var groupFill = function(d, i) {
         return color(d.key);
     };
@@ -165,6 +209,7 @@ $(function() {
         node.selectAll('text').attr("transform", function(d) {
             return "translate(" + d.x + "," + d.y + ")"
         });
+
 
       svg.selectAll("path")
         .data(groups)
@@ -210,3 +255,4 @@ function update() {
         return "translate(" + d + ")";
     });
 }
+});//]]>  
