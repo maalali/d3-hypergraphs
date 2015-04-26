@@ -1,0 +1,248 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script type="text/javascript" src="matrixTable.js"></script>
+    <title>Untitled Document</title>
+    <style>
+#matrixForm {
+	background-color: #5e7287;
+	width:500px;
+	height:500px;
+}
+#matrixFormMain {
+	height: 100%;
+	width:100%;
+	background-color: antiquewhite;
+// overflow: hidden;
+}
+#vertTitle {
+	//background-color: #8191a2;
+	text-align: center;
+	color: #c7c7c7;
+	height:20px;
+}
+#HETitle {
+	width:20px;
+	//background-color: #8191a2;
+	text-align: center;
+	color: #c7c7c7;
+ // -ms-writing-mode: bt-lr;
+// -webkit-writing-mode: vertical-lr;
+// -moz-writing-mode: vertical-lr;
+// -ms-writing-mode: vertical-lr;
+// writing-mode: vertical-lr;
+}
+#matrixData {
+	width:100%;
+	height:100%;
+}
+#dataTable {
+	height:100%;
+	width:100%;
+}
+#dataTable td {
+	background-color:rgb(181, 185, 190);
+	color: white;
+	text-align: center;
+	width:20px;
+	height:20px
+}
+.matrixDataCell {
+	height:100%;
+// width:100%;
+	background-color:rgb(70, 79, 89);
+}
+#addCol, #addRow {
+	width: 20px;
+	height: 20px;
+	//background-color: rgb(90, 127, 166);
+	text-align: center;
+	color: white;
+  cursor: pointer;
+}
+#matrixContainer {
+	width:100%;
+	height:100%;
+}
+#matrixContainerTable {
+	border:none;
+	border-collapse:collapse;
+	background-color:rgb(70, 79, 89)
+}
+#HENamesTable td {
+	width:20px;
+	height:20px;
+	background-color:rgb(145, 145, 145);
+	color: white;
+	//text-align: center;
+}
+
+#vertNamesTable {
+  width: 100%;
+}
+
+#vertNamesTable td {
+	width: 20px;
+	height: 20px;
+	background-color:rgb(145, 145, 145);
+	color: white;
+	text-align: center;
+}
+#vertNames {
+	padding-bottom: 0px;
+	padding-top: 0px;
+	//background-color: rgb(70, 79, 89);
+}
+#HENames {
+	padding-right: 0px;
+	padding-left: 0px;
+	//background-color: rgb(70, 79, 89);
+	box-sizing: border-box;
+	height: 100%;
+}
+
+.zero {
+  color: Gray;
+}
+
+.one {
+  color: rgb(181, 255, 24);
+}
+
+</style>
+    <script type="text/javascript">
+	
+		var numOfCols = $('#dataTable tbody').children().eq(0).children().length;
+		var numOfRows = $('#dataTable tbody').children().length;
+		
+	
+    </script>
+    </head>
+
+    <body>
+    <div id="matrixContainer" >
+      <table id="matrixContainerTable" border="0" >
+        <tr>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td id="vertTitle">Verteces</td>
+        </tr>
+        <tr>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td id="vertNames">
+              <table id="vertNamesTable" width="100%" border="0">
+                  <tr>
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
+                </tr>
+             </table>
+        </td>
+          <td id="addCol">+</td>
+        </tr>
+        <tr>
+          <td id="HETitle">H</td>
+          	<td id="HENames">
+              <table id="HENamesTable" width="100%" border="0">
+                  <tr>
+                  <td>&nbsp;</td>
+                </tr>
+                  <tr>
+                  <td>&nbsp;</td>
+                </tr>
+                  <tr>
+                  <td>&nbsp;</td>
+                </tr>
+                  <tr>
+                  <td>&nbsp;</td>
+                </tr>
+                  <tr>
+                  <td>&nbsp;</td>
+                </tr>
+                </table>
+			</td>
+          <td class="matrixDataCell">
+          	<div id="matrixData">
+              <table id="dataTable" border="0">
+              <tr>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                </tr>
+              <tr>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                </tr>
+              <tr>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                </tr>
+              <tr>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                </tr>
+              <tr>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                </tr>
+            </table>
+            </div>
+            </td>
+        </tr>
+        <tr>
+          <td>&nbsp;</td>
+          <td id="addRow">+</td>
+        </tr>
+      </table>
+    </div>
+</body>
+</html>
