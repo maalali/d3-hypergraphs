@@ -1,19 +1,24 @@
 //<![CDATA[ 
 $(window).load(function(){
 var vertices = new Array();
-var width = 960,
-    height = 500;
+// var width = 960,
+//     height = 500;
+var width = window.innerWidth - 20,
+    height = window.innerHeight - 10;
 var color = d3.scale.category10();
 var r = 6;
+var ndoeAdditionalDistance = 60;    // Used to create longer distance between nodes in different hyperedges
 var force = d3.layout.force().size([width, height]);
 var svg = d3.select("body").append("svg").attr("width", width).attr("height", height).attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 $(function() {
 
     // Example #2
-    var json = "{\"nodes\":[{\"name\":\"0\",\"group\":\"0\",\"HE\":[\"a\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"1\",\"group\":\"1\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"2\",\"group\":\"2\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"3\",\"group\":\"3\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"4\",\"group\":\"4\",\"HE\":[\"b\"],\"fontsize\":\"45px\",\"title\":null}],\"links\":[{\"source\":0,\"target\":1,\"value\":1},{\"source\":0,\"target\":2,\"value\":1},{\"source\":0,\"target\":3,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":3,\"value\":1},{\"source\":1,\"target\":4,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":4,\"value\":1},{\"source\":3,\"target\":4,\"value\":1}]}";
+    //var json = "{\"nodes\":[{\"name\":\"0\",\"group\":\"0\",\"HE\":[\"a\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"1\",\"group\":\"1\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"2\",\"group\":\"2\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"3\",\"group\":\"3\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"4\",\"group\":\"4\",\"HE\":[\"b\"],\"fontsize\":\"45px\",\"title\":null}],\"links\":[{\"source\":0,\"target\":1,\"value\":1},{\"source\":0,\"target\":2,\"value\":1},{\"source\":0,\"target\":3,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":3,\"value\":1},{\"source\":1,\"target\":4,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":4,\"value\":1},{\"source\":3,\"target\":4,\"value\":1},{\"source\":0,\"target\":4,\"value\":1}]}";
+    //var json = "{\"nodes\":[{\"name\":\"0\",\"group\":\"0\",\"HE\":[\"a\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"1\",\"group\":\"1\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"2\",\"group\":\"2\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"3\",\"group\":\"3\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"4\",\"group\":\"4\",\"HE\":[\"b\"],\"fontsize\":\"45px\",\"title\":null}],\"links\":[{\"source\":0,\"target\":1,\"value\":1},{\"source\":0,\"target\":2,\"value\":1},{\"source\":0,\"target\":3,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":3,\"value\":1},{\"source\":1,\"target\":4,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":4,\"value\":1},{\"source\":3,\"target\":4,\"value\":1}]}";
     
     // Example #3
-    //var json = "{\"nodes\":[{\"name\":\"0\",\"group\":\"0\",\"HE\":[\"a\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"1\",\"group\":\"1\",\"HE\":[\"a\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"2\",\"group\":\"2\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"3\",\"group\":\"3\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"4\",\"group\":\"4\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"5\",\"group\":\"5\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"6\",\"group\":\"6\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"7\",\"group\":\"7\",\"HE\":[\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"8\",\"group\":\"8\",\"HE\":[\"c\"],\"fontsize\":\"45px\",\"title\":null}],\"links\":[{\"source\":0,\"target\":1,\"value\":1},{\"source\":0,\"target\":2,\"value\":1},{\"source\":0,\"target\":3,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":4,\"value\":1},{\"source\":2,\"target\":5,\"value\":1},{\"source\":2,\"target\":6,\"value\":1},{\"source\":3,\"target\":4,\"value\":1},{\"source\":3,\"target\":5,\"value\":1},{\"source\":3,\"target\":6,\"value\":1},{\"source\":4,\"target\":5,\"value\":1},{\"source\":4,\"target\":6,\"value\":1},{\"source\":5,\"target\":6,\"value\":1},{\"source\":4,\"target\":5,\"value\":1},{\"source\":4,\"target\":6,\"value\":1},{\"source\":4,\"target\":7,\"value\":1},{\"source\":4,\"target\":8,\"value\":1},{\"source\":5,\"target\":6,\"value\":1},{\"source\":5,\"target\":7,\"value\":1},{\"source\":5,\"target\":8,\"value\":1},{\"source\":6,\"target\":7,\"value\":1},{\"source\":6,\"target\":8,\"value\":1},{\"source\":7,\"target\":8,\"value\":1}]}";
+   //var json = "{\"nodes\":[{\"name\":\"0\",\"group\":\"0\",\"HE\":[\"a\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"1\",\"group\":\"1\",\"HE\":[\"a\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"2\",\"group\":\"2\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"3\",\"group\":\"3\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"4\",\"group\":\"4\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"5\",\"group\":\"5\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"6\",\"group\":\"6\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"7\",\"group\":\"7\",\"HE\":[\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"8\",\"group\":\"8\",\"HE\":[\"c\"],\"fontsize\":\"45px\",\"title\":null}],\"links\":[{\"source\":0,\"target\":1,\"value\":1},{\"source\":0,\"target\":2,\"value\":1},{\"source\":0,\"target\":3,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":4,\"value\":1},{\"source\":2,\"target\":5,\"value\":1},{\"source\":2,\"target\":6,\"value\":1},{\"source\":3,\"target\":4,\"value\":1},{\"source\":3,\"target\":5,\"value\":1},{\"source\":3,\"target\":6,\"value\":1},{\"source\":4,\"target\":5,\"value\":1},{\"source\":4,\"target\":6,\"value\":1},{\"source\":5,\"target\":6,\"value\":1},{\"source\":4,\"target\":5,\"value\":1},{\"source\":4,\"target\":6,\"value\":1},{\"source\":4,\"target\":7,\"value\":1},{\"source\":4,\"target\":8,\"value\":1},{\"source\":5,\"target\":6,\"value\":1},{\"source\":5,\"target\":7,\"value\":1},{\"source\":5,\"target\":8,\"value\":1},{\"source\":6,\"target\":7,\"value\":1},{\"source\":6,\"target\":8,\"value\":1},{\"source\":7,\"target\":8,\"value\":1},{\"source\":0,\"target\":1,\"value\":1},{\"source\":1,\"target\":0,\"value\":1}]}";
+    var json = "{\"nodes\":[{\"name\":\"0\",\"group\":\"0\",\"HE\":[\"a\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"1\",\"group\":\"1\",\"HE\":[\"a\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"2\",\"group\":\"2\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"3\",\"group\":\"3\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"4\",\"group\":\"4\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"5\",\"group\":\"5\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"6\",\"group\":\"6\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"7\",\"group\":\"7\",\"HE\":[\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"8\",\"group\":\"8\",\"HE\":[\"c\"],\"fontsize\":\"45px\",\"title\":null}],\"links\":[{\"source\":0,\"target\":1,\"value\":1},{\"source\":0,\"target\":2,\"value\":1},{\"source\":0,\"target\":3,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":4,\"value\":1},{\"source\":2,\"target\":5,\"value\":1},{\"source\":2,\"target\":6,\"value\":1},{\"source\":3,\"target\":4,\"value\":1},{\"source\":3,\"target\":5,\"value\":1},{\"source\":3,\"target\":6,\"value\":1},{\"source\":4,\"target\":5,\"value\":1},{\"source\":4,\"target\":6,\"value\":1},{\"source\":5,\"target\":6,\"value\":1},{\"source\":4,\"target\":5,\"value\":1},{\"source\":4,\"target\":6,\"value\":1},{\"source\":4,\"target\":7,\"value\":1},{\"source\":4,\"target\":8,\"value\":1},{\"source\":5,\"target\":6,\"value\":1},{\"source\":5,\"target\":7,\"value\":1},{\"source\":5,\"target\":8,\"value\":1},{\"source\":6,\"target\":7,\"value\":1},{\"source\":6,\"target\":8,\"value\":1},{\"source\":7,\"target\":8,\"value\":1}]}";
 
 
 
@@ -21,14 +26,27 @@ $(function() {
 
     json = $.parseJSON(json);
 
-//to edit here to make the line invesible change the stroke color and make it un visible
+    //to edit here to make the line invesible change the stroke color and make it un visible
     svg.append("svg:rect").attr("width", width).attr("height", height).style("stroke", "#fff").style("fill", "#fff");
 
-    force.nodes(json.nodes).links(json.links).gravity(0.05).linkDistance(120).charge(-200).start();
+    force.nodes(json.nodes)
+        .links(json.links)
+        .gravity(document.getElementById('gravitySlider').value)
+        //.linkDistance(120)
+        .linkDistance(function(n, i) {
+            var l; 
+            n.source.HE.length <= 1 || n.target.HE.length <= 1? l= (parseInt(document.getElementById('attractionSlider').value) + ndoeAdditionalDistance): l=parseInt(document.getElementById('attractionSlider').value); return l;
+
+        })
+        //.charge(600)
+        .charge(function(n, i){  return document.getElementById('repulsionSlider').value;})
+        .linkStrength(0.9)
+        .friction(0.9)
+        .start();
 
     var node = svg.selectAll(".node").data(json.nodes).enter().append("g").attr("class", "node").attr("hyperedges", function(d) {
         return (d.HE)
-    });
+    }).attr('name', function(d) { return d.name;});
     var link = svg.selectAll(".link").data(json.links).enter().append("line").attr("class", "link").style("stroke-opacity", "0.2");
 
     node.append('circle').attr('r', function(d) {
@@ -39,6 +57,17 @@ $(function() {
         return color(d.group)
     });
 
+        //Set up tooltip
+    var tip = d3.tip()
+        .attr('class', 'd3-tip') //tooltips   d3-tip
+        .offset([-10, 0])
+        .html(function (d) {
+        return  d.name + "";
+
+
+    })
+    svg.call(tip);
+ 
     node.selectAll('text').data(json.nodes).enter().append("text").attr("text-anchor", "middle").attr("dx", 2).attr("dy", ".35em").attr('original-title', function(d) {
         return d.title
     }).attr("style", function(d) {
@@ -49,7 +78,7 @@ $(function() {
         return "font-size:" + d.fontsize
     }).style('fill', function(d) {
         return color(d.group);
-    }).style("cursor", "pointer").call(force.drag);
+    }).style("cursor", "pointer").call(force.drag).on('click', tip.show).on('mouseout', tip.hide);
 
     var cx = new Array();
     var cy = new Array();
@@ -82,6 +111,7 @@ $(function() {
     var groupsObj = {};     // A temp object to hold grouped nodes. 
                             // This is used to utilize the hashtable property in JavaScript so we don't have to check for duplicate keys
 
+    var nodeName;
     // Loop through all nodes
     node[0].forEach(function(n) { 
 
@@ -105,8 +135,10 @@ $(function() {
                 // Add the current node to the key (i.e. to the hyperedge)
                 groupsObj[k].values.push(n);
             }
-        })
-    })
+        });
+
+
+    });
 
     // Convert the list of objects into an array
     for(var i in groupsObj) {
@@ -128,11 +160,25 @@ $(function() {
             
      
     var groupPath = function(data) {
+
         var corners = d3.geom.hull(data.values.map(function(i) {
-            return [$(i).attr("cx"), $(i).attr("cy")];
+            // if ($(i) == undefined) return;
+            
+            //console.log($(i));
+
+            // console.log("Inside hull: ");
+            // console.log(val);
+
+            return [$(i).attr("cx"), $(i).attr("cy"), $(i).attr('name')]; // ** NOTE: node name has been added for debugging; it is not needed.
         }));
+
+        // console.log("done hull");
+
         if(corners.length == 0) {return "";}
-        
+
+        // console.log("Inside grouPath: ");
+        // console.log(corners);
+
         //console.log(corners);
         var x1 = parseInt(corners[corners.length - 1][0]);
         var y1 = parseInt(corners[corners.length - 1][1]);
@@ -161,15 +207,17 @@ $(function() {
            
            // console.log(d);  
 
-            var calpha = (r1 - r2)/d;
+            var calpha = (d!=0)?(r1 - r2)/d:0;
             var salpha = Math.sqrt(1-(calpha*calpha));
             var x1p = x1 + (r1/d * ( calpha * dx + salpha * dy));
             var y1p = y1 + (r1/d * (-salpha * dx + calpha * dy));
             var x2p = x2 + (r2/d * ( calpha * dx + salpha * dy));
             var y2p = y2 + (r2/d * (-salpha * dx + calpha * dy));
             //ret += "L"+x1p+","+y1p+"L"+x2p+","+y2p;
-            ret += "A "+r1+" "+r1+" 0 0 1 "+x1p+","+y1p+"L"+x2p+","+y2p;
+            ret += " A "+r1+" "+r1+" 0 0 1 "+x1p+","+y1p+"L"+x2p+","+y2p;
+            //ret = ret.replace(/NaN/g, '0')
         }
+       //console.log(ret);
         return ret;
     };
 
@@ -178,12 +226,13 @@ $(function() {
         return color(d.key);
     };
 
-    svg.style("opacity", 1e-6).transition().duration(1000).style("opacity", 1);
+   // svg.style("opacity", 1e-6).transition().duration(1000).style("opacity", 1);
 
 
     force.on("tick", function() {
         
 
+        // (x1,y1) o-------------o (x2,y2)
         link.attr("x1", function(d) {
             return d.source.x;
         }).attr("y1", function(d) {
@@ -194,18 +243,24 @@ $(function() {
             return d.target.y;
         });
 
-
+        // nodes\verteces locations
+        // node = all g SVG elements. HTML tag example: <g ... cx='100' cy='20' .. 
+        // Please note: both attributes updates ONLY data object associated with each element. It does NOT make the changes effective\visible 
+        // to the end user untill we do the transformation  below. 
         node.attr("cx", function(d) {
-            return d.x = Math.max(r, Math.min(width - r, d.x));
+            return d.x = Math.max(r, Math.min(width - r, d.x)); // to make sure it is within our SVG area width 
         }).attr("cy", function(d) {
-            return d.y = Math.max(r, Math.min(height - r, d.y));
+            return d.y = Math.max(r, Math.min(height - r, d.y)); // to make sure it is within our SVG area height
         });
 
+        // After the above updates to the data objects associated with each g elemnt (each node), we
+        // apply transformation to make changes visible (i.e. render HTML\SVG updates to be visible to the end user)
         node.selectAll('circle').attr("transform", function(d) {
             return "translate(" + d.x + "," + d.y + ")"
         });
 
         // reposition text
+        // Same as the above node's transformation 
         node.selectAll('text').attr("transform", function(d) {
             return "translate(" + d.x + "," + d.y + ")"
         });
@@ -219,11 +274,91 @@ $(function() {
         .style("stroke", groupFill)
         .style("stroke-width", 1)
         .style("stroke-linejoin", "round")
-        .style("opacity", .2)
-        .attr("d", groupPath);
+        .style("opacity", .2);
+        //.attr("d", groupPath);
 
 
     });
+    d3.select("#gravitySlider").on("input", function() { 
+        force.stop();
+        var newGravity = document.getElementById('gravitySlider').value;
+        var newCharge = document.getElementById('repulsionSlider').value;
+        var newLStrength = document.getElementById('attractionSlider').value;
+        
+        document.getElementById('gravityInput').value = newGravity;
+        document.getElementById('repulsionInput').value = newCharge;
+        document.getElementById('attractionInput').value = newLStrength;
+
+        force
+        .charge(newCharge)
+        .linkDistance(function(n, i) {
+            var l; 
+            n.source.HE.length <= 1 || n.target.HE.length <= 1? l=( parseInt(newLStrength) + ndoeAdditionalDistance): l=newLStrength; return l;
+
+        })
+        .gravity(newGravity).start();
+  
+        });
+       
+    d3.select("#attractionSlider").on("input", function() { 
+        force.stop();
+        var newGravity = document.getElementById('gravitySlider').value;
+        var newCharge = document.getElementById('repulsionSlider').value;
+        var newLStrength = document.getElementById('attractionSlider').value;
+        
+        document.getElementById('gravityInput').value = newGravity;
+        document.getElementById('repulsionInput').value = newCharge;
+        document.getElementById('attractionInput').value = newLStrength;
+
+        force
+        .charge(newCharge)
+        .linkDistance(function(n, i) {
+            var l; 
+            n.source.HE.length <= 1 || n.target.HE.length <= 1? l=( parseInt(newLStrength) + ndoeAdditionalDistance): l=newLStrength; return l;
+
+        })
+        .gravity(newGravity).start();
+  
+        });
+
+    d3.select("#repulsionSlider").on("input", function() { 
+        force.stop();
+        var newGravity = document.getElementById('gravitySlider').value;
+        var newCharge = document.getElementById('repulsionSlider').value;
+        var newLStrength = document.getElementById('attractionSlider').value;
+        
+        document.getElementById('gravityInput').value = newGravity;
+        document.getElementById('repulsionInput').value = newCharge;
+        document.getElementById('attractionInput').value = newLStrength;
+
+        force
+        .charge(newCharge)
+        .linkDistance(function(n, i) {
+            var l; 
+            n.source.HE.length <= 1 || n.target.HE.length <= 1? l=( parseInt(newLStrength) + ndoeAdditionalDistance): l=newLStrength; return l;
+
+        })
+        .gravity(newGravity).start();
+  
+        });
+
+    d3.select("#dark-theme").on("click", function () {
+
+        d3.select("body").attr("class", "dark");
+        d3.selectAll("#dark-theme").attr("disabled", "disabled");
+        d3.selectAll("#light-theme").attr("disabled", null);
+        svg.selectAll('rect').style("fill", "#131313");
+
+    });
+
+   d3.select("#light-theme").on("click", function () {
+        d3.select("body").attr("class", null);
+        d3.selectAll("#light-theme").attr("disabled", "disabled");
+        d3.selectAll("#dark-theme").attr("disabled", null);
+        svg.selectAll('rect').style("fill", "#fff");
+
+ });
+   
 });
 
 function htmlEncode(value) {
@@ -234,13 +369,13 @@ function htmlDecode(value) {
     return $('<div/>').html(value).text();
 }
 
-function move() {
-    vertices[0] = d3.svg.mouse(this);
-    update();
+/*function move() {
+    //vertices[0] = d3.svg.mouse(this);
+   // update();
 }
 
 function click() {
-    vertices.push(d3.svg.mouse(this));
+   vertices.push(d3.svg.mouse(this));
     update();
 }
 
@@ -254,5 +389,5 @@ function update() {
     svg.selectAll("nodes").data(vertices.slice(1)).enter().append("svg:circle").attr("transform", function(d) {
         return "translate(" + d + ")";
     });
-}
+}*/
 });//]]>  
