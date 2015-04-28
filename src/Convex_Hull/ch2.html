@@ -9,8 +9,87 @@
     <script src="text.js" type="text/javascript"></script>
     <script type='text/javascript' src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"> </script>
 
-	<link rel="stylesheet" type="text/css" href="matrixTable.css">  
+    <link rel="stylesheet" type="text/css" href="matrixTable.css">  
     <style>
+
+            .d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  border-radius: 20px;
+  pointer-events: none;
+  box-shadow: -4px -3px 10px #1C0000;
+  text-align: center;
+  line-height: 85px;
+  height: 50px;
+  border: 2px solid #787878;
+  background: #ADD6FF;
+  position: absolute;
+  width:100px;
+
+
+
+
+
+}
+
+
+  /* Creates a small triangle extender for the tooltip */
+.d3-tip:after {content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -12px;
+  width: 0; height: 0;
+  border-top: 12px solid #ADD6FF;
+  border-right: 12px solid transparent;
+  border-left: 12px solid transparent;
+}
+
+/* Northward tooltips */
+.d3-tip.n:after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -8px;
+  width: 0; height: 0;
+  border: 2px solid #787878;
+  border-top: 12px solid #ADD6FF;
+  border-right: 12px solid transparent;
+  border-left: 12px solid transparent;
+
+
+}
+
+/* Eastward tooltips */
+.d3-tip.e:after {
+   visibility: visible;
+  opacity: 0.9;
+  bottom: 30px;
+  left: 50%;
+  margin-left: -76px;
+  z-index: 999;
+}
+
+/* Southward tooltips */
+.d3-tip.s:after {
+  content: "\25B2";
+  margin: 0 0 1px 0;
+  top: -8px;
+  left: 0;
+  text-align: center;
+    border: 2px solid #ADD6FF;
+}
+
+/* Westward tooltips */
+.d3-tip.w:after {
+  content: "\25B6";
+  margin: -4px 0 0 -1px;
+  top: 50%;
+  left: 100%;
+}
+
     input[type=range] {
         -webkit-appearance: none;
     }
@@ -130,15 +209,15 @@
     
     #matrixEditContainer{
 
-    	height: 309px;
-    	float: left;
-    	display: flex;
+        height: 309px;
+        float: left;
+        display: flex;
     }
 
     #HGOperationsContainer {
-    	height: 309px;
-    	margin-left: 615px;
-    	display: flex;
+        height: 309px;
+        margin-left: 615px;
+        display: flex;
     }
 
     #matrixEditHeader {
@@ -169,22 +248,22 @@
 
     #HGOperationsHeader div {
 
-    	font-size: 12px;
-    	color: white;
+        font-size: 12px;
+        color: white;
     }
 
     #HGOperationsContent {
-    	display: flex;
-    	float: left;
-    	width: 100%;
-    	height: 100%;
-    	background-color: rgb(51, 51, 51);
-    	overflow: auto;
-    	color: white;
+        display: flex;
+        float: left;
+        width: 100%;
+        height: 100%;
+        background-color: rgb(51, 51, 51);
+        overflow: auto;
+        color: white;
     }
 
     #matrixEditHeader { 
-    	color: white;
+        color: white;
     }
 
     #loadFileContent,
@@ -194,9 +273,9 @@
     }
 
     #matrixEditContent {
-    	float: left;
-    	width: 570px;
-    	overflow: auto;
+        float: left;
+        width: 570px;
+        overflow: auto;
     }
     
     #matrixStatsContainer {
@@ -305,7 +384,7 @@
                 <div id="matrixStatsContent">
                     <table id="matrixStatsTable">
                         <tr>
-                            <td colspan="2" rowspan="0">File Info</td>
+                            <td colspan="2" rowspan="0"></td>
                         </tr>
                         <tr style="height: 10px;"></tr>
                         <tr>
@@ -336,48 +415,48 @@
             <div id="topPanel">Top</div>
             <div id="renderingPanel"></div>
             <div id="bottomPanel">
-            	<div id="matrixEditContainer">
-			    	<div id="matrixEditHeader">
-			    		<div> E </div>
-			    		<div> d </div>
-			    		<div> i </div>
-			    		<div> t </div>
-			    		<div> &nbsp; </div>
-			    		<div> M </div>
-			    		<div> a </div>
-			    		<div> t </div>
-			    		<div> r </div>
-			    		<div> i </div>
-			    		<div> x </div>
-			    	</div>
-			    	<div id="matrixEditContent"></div>
-				</div>
-				<div id="HGOperationsContainer">
-			    	<div id="HGOperationsHeader">
-						<div> H </div>
-			    		<div> y </div>
-			    		<div> p </div>
-			    		<div> e </div>
-			    		<div> r </div>
-			    		<div> g </div>
-			    		<div> r </div>
-			    		<div> a </div>
-			    		<div> p </div>
-			    		<div> h </div>
-			    		<div> &nbsp; </div>
-			    		<div> O </div>
-			    		<div> p </div>
-			    		<div> e </div>
-			    		<div> r </div>
-			    		<div> a </div>
-			    		<div> t </div>
-			    		<div> i </div>
-			    		<div> o </div>
-			    		<div> n </div>
-			    		<div> s </div>
-			    	</div>
-			    	<div id="HGOperationsContent">Content</div>
-				</div>
+                <div id="matrixEditContainer">
+                    <div id="matrixEditHeader">
+                        <div> E </div>
+                        <div> d </div>
+                        <div> i </div>
+                        <div> t </div>
+                        <div> &nbsp; </div>
+                        <div> M </div>
+                        <div> a </div>
+                        <div> t </div>
+                        <div> r </div>
+                        <div> i </div>
+                        <div> x </div>
+                    </div>
+                    <div id="matrixEditContent"></div>
+                </div>
+                <div id="HGOperationsContainer">
+                    <div id="HGOperationsHeader">
+                        <div> H </div>
+                        <div> y </div>
+                        <div> p </div>
+                        <div> e </div>
+                        <div> r </div>
+                        <div> g </div>
+                        <div> r </div>
+                        <div> a </div>
+                        <div> p </div>
+                        <div> h </div>
+                        <div> &nbsp; </div>
+                        <div> O </div>
+                        <div> p </div>
+                        <div> e </div>
+                        <div> r </div>
+                        <div> a </div>
+                        <div> t </div>
+                        <div> i </div>
+                        <div> o </div>
+                        <div> n </div>
+                        <div> s </div>
+                    </div>
+                    <div id="HGOperationsContent">Content</div>
+                </div>
             </div>
         </div>
         <div id="rightPanel">
@@ -431,10 +510,10 @@
                             <td>
                                 <form>
                                     <div>
-                                    	<input id="repulsionSlider" type="range" min ="-400" max="600" step ="1"  value="-200" /> 
+                                        <input id="repulsionSlider" type="range" min ="-400" max="600" step ="1"  value="-200" /> 
                                     </div>
                                     <div>
-                                    	<input type="text" id="repulsionInput" value="-200" readonly="readonly"/>
+                                        <input type="text" id="repulsionInput" value="-200" readonly="readonly"/>
                                     </div>
                                 </form>
                             </td>
