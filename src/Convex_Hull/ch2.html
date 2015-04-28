@@ -1,0 +1,454 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Hypergraphs Visualization Tool</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js" type="text/javascript"></script> 
+    <script src="text.js" type="text/javascript"></script>
+    <script type='text/javascript' src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"> </script>
+
+	<link rel="stylesheet" type="text/css" href="matrixTable.css">  
+    <style>
+    input[type=range] {
+        -webkit-appearance: none;
+    }
+    
+    input[type=range]::-webkit-slider-runnable-track {
+        width: 300px;
+        height: 5px;
+        background: #ddd;
+        border: none;
+        border-radius: 3px;
+    }
+    
+    input[type=range]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        border: none;
+        height: 16px;
+        width: 16px;
+        border-radius: 50%;
+        background: goldenrod;
+        margin-top: -4px;
+    }
+    
+    input[type=range]:focus {
+        outline: none;
+    }
+    
+    input[type=range]:focus::-webkit-slider-runnable-track {
+        background: #ccc;
+    }
+    
+    #mainApp {
+        background-color: #333333;
+        float: left;
+        width: 100%;
+        height: 1050px;
+        display: flex;
+    }
+    
+    #leftPanel {
+        background-color: rgb(61, 61, 61);
+        width: 300px;
+        height: 100%;
+        color: white;
+        float: left;
+    }
+    
+    #leftPanelBorder {
+        height: 100%;
+        width: 5px;
+        background-color: #ff6600;
+        float: left;
+    }
+    
+    #rightPanelBorder {
+        height: 100%;
+        width: 5px;
+        background-color: #ff6600;
+        float: right;
+    }
+    
+    #midContainer {
+        float: left;
+        display: flex;
+        width: 100%;
+        height: 100%;
+        //background-color: #cccccc;
+        flex-direction: column;
+    }
+    
+    #topPanel {
+        //background-color: #cccccc;
+        height: 150px;
+        width: 100%;
+        color: white;
+    }
+    
+    #renderingPanel {
+        background-color: #cccccc;
+        height: 100%;
+        width: 100%;
+        overflow: auto;
+    }
+    
+    #bottomPanel {
+        //background-color:Pink;
+        height: 500px;
+        width: 100%;
+        float: left;
+        overflow: auto;
+    }
+    
+    #rightPanel {
+        background-color: rgb(61, 61, 61);
+        height: 100%;
+        width: 300px;
+        color: white;
+        float: right;
+    }
+    
+    #loadFileContainer {
+        height: auto;
+        width: 100%;
+        margin-top: 93px;
+    }
+    
+    #loadFileHeader,
+    #matrixStatsHeader, #moreInteractionHeader {
+        height: 45px;
+        background-color: #ff6600;
+        font-family: monospace;
+        font-size: 18px;
+        text-align: left;
+        box-sizing: border-box;
+        padding-top: 11px;
+        padding-left: 12px;
+    }
+    
+    #matrixEditContainer{
+
+    	height: 309px;
+    	float: left;
+    	display: flex;
+    }
+
+    #HGOperationsContainer {
+    	height: 309px;
+    	margin-left: 615px;
+    	display: flex;
+    }
+
+    #matrixEditHeader {
+        height: 309px;
+        width:45px;
+        background-color: #ff6600;
+        font-family: monospace;
+        font-size: 15px;
+        text-align: center;
+        box-sizing: border-box;
+        padding-top: 60px;
+        float: left;
+        /*padding-left: 12px;*/
+    }    
+
+    #HGOperationsHeader {
+        height: 309px;
+        width:45px;
+        background-color: #ff6600;
+        font-family: monospace;
+        font-size: 15px;
+        text-align: center;
+        box-sizing: border-box;
+        padding-top: 10px;
+        float: left;
+        /*padding-left: 12px;*/
+    }
+
+    #HGOperationsHeader div {
+
+    	font-size: 12px;
+    	color: white;
+    }
+
+    #HGOperationsContent {
+    	display: flex;
+    	float: left;
+    	width: 100%;
+    	height: 100%;
+    	background-color: rgb(51, 51, 51);
+    	overflow: auto;
+    	color: white;
+    }
+
+    #matrixEditHeader { 
+    	color: white;
+    }
+
+    #loadFileContent,
+    #matrixStatsContent, #moreInteractionContent {
+        height: 100px;
+        //background-color: Gray;
+    }
+
+    #matrixEditContent {
+    	float: left;
+    	width: 570px;
+    	overflow: auto;
+    }
+    
+    #matrixStatsContainer {
+        height: auto;
+        width: 100%;
+        margin-top: 100px;
+    }
+    
+    #moreInteractionContainer {
+        height: auto;
+        width: 100%;
+        margin-top: 220px;
+    }
+    
+    #txtFilePath {
+        margin-top: 10px;
+        margin-left: 5px;
+        width: 130px;
+    }
+    
+    #btnBrowse {
+        margin-top: 10px;
+        width: 70px;
+    }
+    
+    #fileInfoTable,
+    #matrixStatsTable {
+        margin-top: 10px;
+        margin-left: 15px;
+        font-family: monospace;
+        color: rgb(182, 182, 182);
+    }
+    
+    #fileInfoTable td,
+    #matrixStatsTable td {
+        border-bottom-style: solid;
+        border-bottom-width: 1px;
+        height: 20px;
+    }
+    
+    #forceControlTable {
+        margin-top: 10px;
+        margin-left: 5px;
+        font-family: monospace;
+        color: rgb(182, 182, 182);
+    }
+    
+    #forceControlTable td {
+        border-bottom-style: solid;
+        border-bottom-width: 1px;
+        height: 20px;
+    }
+    
+    #gravityInput,
+    #attractionInput,
+    #repulsionInput {
+        width: 205px;
+        background-color: gray;
+        border: none;
+        height: 20px;
+        color: white;
+        text-align: center;
+    }
+    
+    #gravitySlider,
+    #attractionSlider,
+    #repulsionSlider {
+        width: 200px;
+    }
+    
+    form div {
+        height: 30px;
+        box-sizing: border-box;
+        padding-top: 4px;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="mainApp">
+        <div id="leftPanel">
+            <div id="leftPanelBorder"></div>
+            <div id="loadFileContainer">
+                <div id="loadFileHeader">Load Matrix</div>
+                <div id="loadFileContent">
+                    <input id="txtFilePath" type="text" readonly="readonly" />
+                    <input id="btnBrowse" type="button" value="Browse..." />
+                    <table id="fileInfoTable">
+                        <tr>
+                            <td colspan="2" rowspan="0">File Info</td>
+                        </tr>
+                        <tr style="height: 10px;"></tr>
+                        <tr>
+                            <td width="35%">File Name</td>
+                            <td width="65%" style="text-align: center">data.json</td>
+                        </tr>
+                        <tr>
+                            <td width="35%">File Szie</td>
+                            <td width="65%" style="text-align: center"># KB</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div id="matrixStatsContainer">
+                <div id="matrixStatsHeader">Matrix Stats</div>
+                <div id="matrixStatsContent">
+                    <table id="matrixStatsTable">
+                        <tr>
+                            <td colspan="2" rowspan="0">File Info</td>
+                        </tr>
+                        <tr style="height: 10px;"></tr>
+                        <tr>
+                            <td width="42%">Vertices</td>
+                            <td width="58%" style="text-align: center;">#</td>
+                        </tr>
+                        <tr>
+                            <td width="42%">Hyperedges</td>
+                            <td width="58%" style="text-align: center">#</td>
+                        </tr>
+                        <tr>
+                            <td width="42%">Cardinality</td>
+                            <td width="58%" style="text-align: center">#</td>
+                        </tr>
+                        <tr>
+                            <td width="42%">Max Rank</td>
+                            <td width="58%" style="text-align: center">#</td>
+                        </tr>
+                        <tr>
+                            <td width="42%">Max Degree</td>
+                            <td width="58%" style="text-align: center">#</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="midContainer">
+            <div id="topPanel">Top</div>
+            <div id="renderingPanel"></div>
+            <div id="bottomPanel">
+            	<div id="matrixEditContainer">
+			    	<div id="matrixEditHeader">
+			    		<div> E </div>
+			    		<div> d </div>
+			    		<div> i </div>
+			    		<div> t </div>
+			    		<div> &nbsp; </div>
+			    		<div> M </div>
+			    		<div> a </div>
+			    		<div> t </div>
+			    		<div> r </div>
+			    		<div> i </div>
+			    		<div> x </div>
+			    	</div>
+			    	<div id="matrixEditContent"></div>
+				</div>
+				<div id="HGOperationsContainer">
+			    	<div id="HGOperationsHeader">
+						<div> H </div>
+			    		<div> y </div>
+			    		<div> p </div>
+			    		<div> e </div>
+			    		<div> r </div>
+			    		<div> g </div>
+			    		<div> r </div>
+			    		<div> a </div>
+			    		<div> p </div>
+			    		<div> h </div>
+			    		<div> &nbsp; </div>
+			    		<div> O </div>
+			    		<div> p </div>
+			    		<div> e </div>
+			    		<div> r </div>
+			    		<div> a </div>
+			    		<div> t </div>
+			    		<div> i </div>
+			    		<div> o </div>
+			    		<div> n </div>
+			    		<div> s </div>
+			    	</div>
+			    	<div id="HGOperationsContent">Content</div>
+				</div>
+            </div>
+        </div>
+        <div id="rightPanel">
+            <div id="rightPanelBorder"></div>
+            <div id="loadFileContainer">
+                <div id="loadFileHeader">Force Control</div>
+                <div id="loadFileContent">
+                    <table id="forceControlTable">
+                        <tr>
+                            <td>
+                                Gravity
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <form>
+                                    <div>
+                                        <input id="gravitySlider" type="range" min="0" max="5" step=".01" value="0.05" />
+                                    </div>
+                                    <div>
+                                        <input type="text" id="gravityInput" value="0.05" readonly="readonly" />
+                                    </div>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr style="height:10px"></tr>
+                        <tr>
+                            <td>
+                                Attraction (Links)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <form>
+                                    <div>
+                                        <input id="attractionSlider" type="range" min="1" max="600" step="1" value="140" />
+                                    </div>
+                                    <div>
+                                        <input type="text" id="attractionInput" value="140" readonly="readonly" />
+                                    </div>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr style="height:10px"></tr>
+                        <tr>
+                            <td>
+                                Charge (Nodes)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <form>
+                                    <div>
+                                    	<input id="repulsionSlider" type="range" min ="-400" max="600" step ="1"  value="-200" /> 
+                                    </div>
+                                    <div>
+                                    	<input type="text" id="repulsionInput" value="-200" readonly="readonly"/>
+                                    </div>
+                                </form>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+          <!--   <div id="moreInteractionContainer">
+                <div id="moreInteractionHeader">More</div>
+                <div id="moreInteractionContent">
+                </div>
+            </div> -->
+        </div>
+    </div>
+</body>
+
+</html>
