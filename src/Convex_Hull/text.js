@@ -472,7 +472,7 @@ $(function() {
         });
         
         function dragstart(d, i) {
-            force.stop() // stops the force auto positioning before you start dragging
+            force.stop() // stops the force auto positioning before start dragging
         }
         
         function dragmove(d, i) {
@@ -1190,7 +1190,7 @@ $(function() {
         var nodeCount =0, linksCount = 0;
 
         //console.log(jsonG);
-
+        
         // Loop through all rows
         for(var i =0; i < m.length; i++) {
             
