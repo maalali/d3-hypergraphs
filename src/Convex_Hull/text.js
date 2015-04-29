@@ -163,6 +163,7 @@ $(function() {
         .on('click', tip.show)
         .on('mouseout', tip.hide)
         .on('dblclick', releasenode)
+        .on('dblclick', connectedNodes) //Double-click on a node to fade out all but its immediate neighbours. 
         .call(node_drag);
 
         var cx = new Array();
@@ -1255,6 +1256,45 @@ function htmlEncode(value) {
 function htmlDecode(value) {
     return $('<div/>').html(value).text();
 }
+
+
+//------------ highlighting -----------------------------------------------------
+//Double-click on a node to fade out all but its immediate neighbours. 
+
+//Toggle stores whether the highlighting is on
+var toggle = 0;
+//Create an array logging what is connected to what
+var linkedByIndex = {};
+for (i = 0; i < graph.nodes.length; i++) {
+    linkedByIndex[i + "," + i] = 1;
+};
+graph.links.forEach(function (d) {
+    linkedByIndex[d.source.index + "," + d.target.index] = 1;
+});
+//This function looks up whether a pair are neighbours
+function neighboring(a, b) {
+    return linkedByIndex[a.index + "," + b.index];
+}
+function connectedNodes() {
+    if (toggle == 0) {
+        //Reduce the opacity of all but the neighbouring nodes
+        d = d3.select(this).node().__data__;
+        node.style("opacity", function (o) {
+            return neighboring(d, o) | neighboring(o, d) ? 1 : 0.1;
+        });
+        link.style("opacity", function (o) {
+            return d.index==o.source.index | d.index==o.target.index ? 1 : 0.1;
+        });
+        //Reduce the op
+        toggle = 1;
+    } else {
+        //Put them back to opacity=1
+        node.style("opacity", 1);
+        link.style("opacity", 1);
+        toggle = 0;
+    }
+}
+//____________________________________________________________________________
 
 /*function move() {
     //vertices[0] = d3.svg.mouse(this);
