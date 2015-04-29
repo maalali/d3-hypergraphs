@@ -338,7 +338,7 @@
     }
     
     #fileInfoTable,
-    #matrixStatsTable {
+    #matrixStatsTable,  #HGOperationsTable {
         margin-top: 10px;
         margin-left: 15px;
         font-family: monospace;
@@ -346,7 +346,7 @@
     }
     
     #fileInfoTable td,
-    #matrixStatsTable td {
+    #matrixStatsTable td, #HGOperationsTable td {
         border-bottom-style: solid;
         border-bottom-width: 1px;
         height: 20px;
@@ -491,7 +491,38 @@
                         <div> n </div>
                         <div> s </div>
                     </div>
-                    <div id="HGOperationsContent">Content</div>
+                    <div id="HGOperationsContent">
+                        <table id="HGOperationsTable" cellspacing="10px">
+                        <tr>
+                            <td colspan="10" rowspan="0"></td>
+                        </tr>
+                       
+                        <tr>
+                            <td >Basic Operations</td>
+                            <td style="text-align: center;">
+                                <input id="btnHGDual" type="button" value="Dual" style="width:100%;" />
+                            </td>
+                            <td style="text-align: center;">
+                                <input id="btnHG2Sec" type="button" value="2-Sec" style="width:100%;" />
+                            </td>
+                            <td style="text-align: center;">
+                                <input id="btnHGLineGraph" type="button" value="Line Graph" style="width:100%;" />
+                            </td>                                                                               
+
+                        </tr>
+                        <tr>
+                           <td >Set Operations</td>
+                            <td style="text-align: center;">
+                                <input id="btnHGMatchingSet" type="button" value="Matching Set" style="width:100%;" />
+                            </td>
+                            <td style="text-align: center;">
+                                <input id="btnHGTransversalSet" type="button" value="Transversal Set" style="width:100%;" />
+                            </td>
+                        </tr>
+
+
+                    </table>
+                    </div>
                 </div>
             </div>
         </div>

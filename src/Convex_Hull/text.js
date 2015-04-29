@@ -63,6 +63,9 @@ $(function() {
         // Number of cols/vertices
         var numOfCols = hypergraph[0][1].length;
 
+        // Assign basic ops events
+        $('#btnHGDual').click(dual);
+
         function d3_visualize() {
 
         $("#renderingPanel").html('');
@@ -950,6 +953,46 @@ $(function() {
         return inputBox;
     }
 
+    /*
+    *
+    *
+    *   Hypergraph Ops Functions
+    *
+    */
+
+    function dual() {
+
+
+        var HGMatrix = [];
+
+        for (var i = 0; i < hypergraph.length; i++) {
+            HGMatrix.push(hypergraph[i][1]);
+        };
+
+        transposedHGMatrix = HGMatrix[0].map(function(col, i) { 
+              return HGMatrix.map(function(row) { 
+                return row[i] 
+              })
+        });
+
+        var numOfRows = transposedHGMatrix.length;
+        var numOfCols = transposedHGMatrix[0].length;
+        var HEName = "a";
+
+        // CLear current hypergraph
+        hypergraph = [];
+
+        for (var i = 0; i < numOfRows; i++) {
+
+            hypergraph.push([HEName, transposedHGMatrix[i]]);
+            HEName = getNewHEName(HEName);
+        };
+
+        d3_visualize();
+    }
+
+    //
+    // Update the matrix stats
     function updateMatrixStats() {
 
         // Get the number of vertices
