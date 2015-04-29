@@ -139,7 +139,13 @@ $(function() {
 
         })
         svg.call(tip);
-     
+        
+        var node_drag = d3.behavior.drag()
+        .on("dragstart", dragstart)
+        .on("drag", dragmove)
+        .on("dragend", dragend);
+   
+    
         node.selectAll('text').data(HGJason.nodes).enter().append("text").attr("text-anchor", "middle").attr("dx", 2).attr("dy", ".35em").attr('original-title', function(d) {
             return d.title
         }).attr("style", function(d) {
@@ -152,7 +158,12 @@ $(function() {
             return "font-size:" + d.fontsize
         })/*.style('fill', function(d) {
             return color(d.group);
-        })*/.style("cursor", "pointer").call(force.drag).on('click', tip.show).on('mouseout', tip.hide);
+        })*/.style("cursor", "pointer")
+        .call(force.drag)
+        .on('click', tip.show)
+        .on('mouseout', tip.hide)
+        .on('dblclick', releasenode)
+        .call(node_drag);
 
         var cx = new Array();
         var cy = new Array();
@@ -459,6 +470,27 @@ $(function() {
             svg.selectAll('rect').style("fill", "#fff");
 
         });
+        
+        function dragstart(d, i) {
+            force.stop() // stops the force auto positioning before you start dragging
+        }
+        
+        function dragmove(d, i) {
+            d.px += d3.event.dx;
+            d.py += d3.event.dy;
+            d.x += d3.event.dx;
+            d.y += d3.event.dy;
+        }
+    
+        function dragend(d, i) {
+            d.fixed = true; // set the node to fixed so the force doesn't include the node in its auto positioning stuff
+            force.resume();
+        }
+        
+        function releasenode(d) {
+            d.fixed = false; //  set the node to fixed so the force doesn't include the node in its auto positioning stuff
+        }
+    
 
         }
 
