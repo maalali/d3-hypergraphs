@@ -160,10 +160,10 @@ $(function() {
             return color(d.group);
         })*/.style("cursor", "pointer")
         .call(force.drag)
-        .on('click', tip.show)
+        .on('mouseover', tip.show)
         .on('mouseout', tip.hide)
         .on('dblclick', releasenode)
-        .on('dblclick', connectedNodes) //Double-click on a node to fade out all but its immediate neighbours. 
+        .on('click', connectedNodes) //click on a node to fade out all but its immediate neighbours. 
         .call(node_drag);
 
         var cx = new Array();
@@ -250,53 +250,70 @@ $(function() {
         }
                 
          
-       var groupPath = function(data) {
-        var corners = d3.geom.hull(data.values.map(function(i) {
-            return [$(i).attr("cx"), $(i).attr("cy")];
-        }));
-        if(corners.length == 0) {return "";}
-        
-        console.log(corners);
-        var x1 = parseInt(corners[corners.length - 1][0]);
-        var y1 = parseInt(corners[corners.length - 1][1]);
-        var x2 = parseInt(corners[0][0]);
-        var y2 = parseInt(corners[0][1]);
-        var r1 = getRadius(x1,y1,data);
-        var r2 = getRadius(x2,y2,data);
-        var dx = (x2-x1);
-        var dy = (y2-y1);
-        var d = Math.sqrt(dx*dx + dy*dy);
-        var calpha = (d!=0)?(r1 - r2)/d:0;
-        var salpha = Math.sqrt(1-(calpha*calpha));
-        var x2p = x2 - r2/d * (calpha * dx + salpha * dy);
-        var y2p = y2 - r2/d * (-salpha * dx + calpha * dy);
-        var ret = "M"+x2p+","+y2p;
-        for(var i = 0;i<corners.length;i++) {
-            var x1 = parseInt(corners[i][0]);
-            var y1 = parseInt(corners[i][1]);
-            var x2 = parseInt(corners[(i+1)%corners.length][0]);
-            var y2 = parseInt(corners[(i+1)%corners.length][1]);
+        var groupPath = function(data) {
+
+            var corners = d3.geom.hull(data.values.map(function(i) {
+                // if ($(i) == undefined) return;
+                
+                //console.log($(i));
+
+                // console.log("Inside hull: ");
+                // console.log(val);
+
+                return [$(i).attr("cx"), $(i).attr("cy"), $(i).attr('name')]; // ** NOTE: node name has been added for debugging; it is not needed.
+            }));
+
+            // console.log("done hull");
+
+            if(corners.length == 0) {return "";}
+
+            // console.log("Inside grouPath: ");
+            // console.log(corners);
+
+            //console.log(corners);
+            var x1 = parseInt(corners[corners.length - 1][0]);
+            var y1 = parseInt(corners[corners.length - 1][1]);
+            var x2 = parseInt(corners[0][0]);
+            var y2 = parseInt(corners[0][1]);
             var r1 = getRadius(x1,y1,data);
             var r2 = getRadius(x2,y2,data);
             var dx = (x2-x1);
             var dy = (y2-y1);
             var d = Math.sqrt(dx*dx + dy*dy);
-           
-             
-            var calpha = (r1 - r2)/d;
+            var calpha = (d!=0)?(r1 - r2)/d:0;
             var salpha = Math.sqrt(1-(calpha*calpha));
-            var x1p = x1 - (r1/d * (calpha * dx + salpha * dy));
-            var y1p = y1 - (r1/d * (-salpha * dx + calpha * dy));
-            var x2p = x2 - (r2/d * (calpha * dx + salpha * dy));
-            var y2p = y2 - (r2/d * (-salpha * dx + calpha * dy));
-            
-			ret += "A "+r1+" "+r1+" 1 0 0 "+x1p+","+y1p+"L"+x2p+","+y2p;
-			
-			console.log(ret); 
-        }
-        return ret;
-    //return corners;
-	};
+            var x2p = x2 + r2/d * ( salpha * dx + calpha * dy);
+            var y2p = y2 + r2/d * (salpha * dy + calpha * dx);
+            var ret = "M"+x2p+","+y2p;
+            for(var i = 0;i<corners.length;i++) {
+                var x1 = parseInt(corners[i][0]);
+                var y1 = parseInt(corners[i][1]);
+                var x2 = parseInt(corners[(i+1)%corners.length][0]);
+                var y2 = parseInt(corners[(i+1)%corners.length][1]);
+                var r1 = getRadius(x1,y1,data);
+                var r2 = getRadius(x2,y2,data);
+                var dx = (x2-x1);
+                var dy = (y2-y1);
+                var d = Math.sqrt(dx*dx + dy*dy);
+               
+               // console.log(d);  
+
+                var calpha = (d!=0)?(r1 - r2)/d:0;
+                var salpha = Math.sqrt(1-(calpha*calpha));
+
+
+                var x1p = x1 + r2/d * ( -salpha * dy + calpha * dx);
+                var y1p = y1 + r1/d * (-salpha * dy  + calpha * dx);
+                var x2p = x2 + r2/d * ( calpha * dy + salpha * dx);
+                var y2p = y2 + r2/d * (salpha * dx  -calpha * dy);
+
+                //ret += "L"+x1p+","+y1p+"L"+x2p+","+y2p;
+                ret += " A "+r1+","+r1+" 0 0 1 "+x1p+","+y1p+"L"+x2p+","+y2p;
+                //ret = ret.replace(/NaN/g, '0')
+            }
+           //console.log(ret);
+            return ret;
+        };
 
         /*var groupPath = function(d) {
             var result = "M" + d3.geom.hull(d.values.map(function(i) {
