@@ -12,6 +12,37 @@
     <link rel="stylesheet" type="text/css" href="matrixTable.css">  
     <style>
 
+ text
+        {
+            font-family: "Contrail One";
+            text-shadow: 4px 4px 4px #aaa;
+        }
+        
+        line.link
+        {
+            stroke: #999;
+            stroke-opacity: 1;
+        }
+        body {background-color: linen;}
+        
+        path {
+            fill: lightsteelblue;
+            stroke: #000;
+            stroke-linejoin:round;
+            opacity:0.2;
+        }
+
+        circle
+        {
+            opacity:0.5;
+        }
+
+
+        body.dark {
+            background: #131313;
+            color: #e3e3e3;
+        }
+
             .d3-tip {
   line-height: 1;
   font-weight: bold;
@@ -189,13 +220,13 @@
         float: right;
     }
     
-    #loadFileContainer {
+    #loadFileContainer, #forceControlContainer {
         height: auto;
         width: 100%;
         margin-top: 93px;
     }
     
-    #loadFileHeader,
+    #loadFileHeader, #forceControlHeader,
     #matrixStatsHeader, #moreInteractionHeader {
         height: 45px;
         background-color: #ff6600;
@@ -266,11 +297,16 @@
         color: white;
     }
 
-    #loadFileContent,
+    #loadFileContent, #forceControlContent,
     #matrixStatsContent, #moreInteractionContent {
         height: 100px;
         //background-color: Gray;
     }
+
+    #forceControlContent {
+       position: absolute;
+    }
+
 
     #matrixEditContent {
         float: left;
@@ -389,23 +425,23 @@
                         <tr style="height: 10px;"></tr>
                         <tr>
                             <td width="42%">Vertices</td>
-                            <td width="58%" style="text-align: center;">#</td>
+                            <td id="numOfVertices" width="58%" style="text-align: center;">#</td>
                         </tr>
                         <tr>
                             <td width="42%">Hyperedges</td>
-                            <td width="58%" style="text-align: center">#</td>
+                            <td id="numOfHyperedges" width="58%" style="text-align: center">#</td>
                         </tr>
                         <tr>
                             <td width="42%">Cardinality</td>
-                            <td width="58%" style="text-align: center">#</td>
+                            <td id="matrixCardinality" width="58%" style="text-align: center">#</td>
                         </tr>
                         <tr>
                             <td width="42%">Max Rank</td>
-                            <td width="58%" style="text-align: center">#</td>
+                            <td id="maxRank" width="58%" style="text-align: center">#</td>
                         </tr>
                         <tr>
                             <td width="42%">Max Degree</td>
-                            <td width="58%" style="text-align: center">#</td>
+                            <td id="maxDegree" width="58%" style="text-align: center">#</td>
                         </tr>
                     </table>
                 </div>
@@ -461,9 +497,9 @@
         </div>
         <div id="rightPanel">
             <div id="rightPanelBorder"></div>
-            <div id="loadFileContainer">
-                <div id="loadFileHeader">Force Control</div>
-                <div id="loadFileContent">
+            <div id="forceControlContainer">
+                <div id="forceControlHeader">Force Control</div>
+                <div id="forceControlContent">
                     <table id="forceControlTable">
                         <tr>
                             <td>

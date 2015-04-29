@@ -10,418 +10,479 @@ var width = $('#renderingPanel').width() - 20,
 var color = d3.scale.category10();
 var r = 6;
 var ndoeAdditionalDistance = 60;    // Used to create longer distance between nodes in different hyperedges
+var incidenceMatrixInput; 
+var hypergraph;
 var force = d3.layout.force().size([width, height]);
 var svg = d3.select("#renderingPanel").append("svg").attr("width", width).attr("height", height).attr("transform", "translate(" + width / 2 + "," + height / 2 + ")").style({"padding-top": "9px", "padding-left":"9px"});
 $(function() {
 
-    // Example #1
-    incidenceMatrixInput = {
-        "V":8,
-        "E":6,
-        "K":27,
-        "Matrix":[
-                    ["a", [ 1, 1, 0, 1, 1, 1, 1, 1 ]],
-                    ["b", [ 0, 0, 0, 1, 0, 0, 1, 0 ]],
-                    ["c", [ 1, 0, 0, 1, 1, 0, 1, 1 ]],
-                    ["d", [ 0, 0, 1, 1, 1, 0, 0, 1 ]],
-                    ["e", [ 0, 1, 1, 0, 0, 1, 1, 0 ]],
-                    ["f", [ 1, 1, 1, 0, 1, 0, 0, 1 ]]
-                ]
-    };
+        // // Example #2
+        // var incidenceMatrixInput = {
+        //     "V":5,
+        //     "E":2,
+        //     "K":8,
+        //     "Matrix":[
+        //                     ["a", [ 1, 1, 1, 1, 0]],
+        //                     ["b", [ 0, 1, 1, 1, 1]]
+        //                 ]
+        // };
 
-    // Get the matrix\hypergraph data
-    hypergraph = incidenceMatrixInput.Matrix;
+        // Example #3
+        incidenceMatrixInput = {
+            "V":9,
+            "E":2,
+            "K":14,
+            "Matrix":[
+                            ["a", [ 1, 1, 1, 1, 0, 0, 0, 0, 0 ]],
+                            ["b", [ 0, 0, 1, 1, 1, 1, 1, 0, 0 ]],
+                            ["c", [ 0, 0, 0, 0, 1, 1, 1, 1, 1 ]]
+                        ]
+        };
 
-    // Number of rows\Hyperedges
-    var numOfRows = hypergraph.length; // Input from user
-    
-    // Number of cols/vertices
-    var numOfCols = hypergraph[0][1].length;
+       // // Example #1
+       //  incidenceMatrixInput = {
+       //      "V":8,
+       //      "E":6,
+       //      "K":27,
+       //      "Matrix":[
+       //                  ["a", [ 1, 1, 0, 1, 1, 1, 1, 1 ]],
+       //                  ["b", [ 0, 0, 0, 1, 0, 0, 1, 0 ]],
+       //                  ["c", [ 1, 0, 0, 1, 1, 0, 1, 1 ]],
+       //                  ["d", [ 0, 0, 1, 1, 1, 0, 0, 1 ]],
+       //                  ["e", [ 0, 1, 1, 0, 0, 1, 1, 0 ]],
+       //                  ["f", [ 1, 1, 1, 0, 1, 0, 0, 1 ]]
+       //              ]
+       //  };
 
-    // Example #2
-    //var HGJason = "{\"nodes\":[{\"name\":\"0\",\"group\":\"0\",\"HE\":[\"a\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"1\",\"group\":\"1\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"2\",\"group\":\"2\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"3\",\"group\":\"3\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"4\",\"group\":\"4\",\"HE\":[\"b\"],\"fontsize\":\"45px\",\"title\":null}],\"links\":[{\"source\":0,\"target\":1,\"value\":1},{\"source\":0,\"target\":2,\"value\":1},{\"source\":0,\"target\":3,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":3,\"value\":1},{\"source\":1,\"target\":4,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":4,\"value\":1},{\"source\":3,\"target\":4,\"value\":1},{\"source\":0,\"target\":4,\"value\":1}]}";
-    //var HGJason = "{\"nodes\":[{\"name\":\"0\",\"group\":\"0\",\"HE\":[\"a\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"1\",\"group\":\"1\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"2\",\"group\":\"2\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"3\",\"group\":\"3\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"4\",\"group\":\"4\",\"HE\":[\"b\"],\"fontsize\":\"45px\",\"title\":null}],\"links\":[{\"source\":0,\"target\":1,\"value\":1},{\"source\":0,\"target\":2,\"value\":1},{\"source\":0,\"target\":3,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":3,\"value\":1},{\"source\":1,\"target\":4,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":4,\"value\":1},{\"source\":3,\"target\":4,\"value\":1}]}";
-    
-    // Example #3
-   //var HGJason = "{\"nodes\":[{\"name\":\"0\",\"group\":\"0\",\"HE\":[\"a\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"1\",\"group\":\"1\",\"HE\":[\"a\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"2\",\"group\":\"2\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"3\",\"group\":\"3\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"4\",\"group\":\"4\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"5\",\"group\":\"5\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"6\",\"group\":\"6\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"7\",\"group\":\"7\",\"HE\":[\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"8\",\"group\":\"8\",\"HE\":[\"c\"],\"fontsize\":\"45px\",\"title\":null}],\"links\":[{\"source\":0,\"target\":1,\"value\":1},{\"source\":0,\"target\":2,\"value\":1},{\"source\":0,\"target\":3,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":4,\"value\":1},{\"source\":2,\"target\":5,\"value\":1},{\"source\":2,\"target\":6,\"value\":1},{\"source\":3,\"target\":4,\"value\":1},{\"source\":3,\"target\":5,\"value\":1},{\"source\":3,\"target\":6,\"value\":1},{\"source\":4,\"target\":5,\"value\":1},{\"source\":4,\"target\":6,\"value\":1},{\"source\":5,\"target\":6,\"value\":1},{\"source\":4,\"target\":5,\"value\":1},{\"source\":4,\"target\":6,\"value\":1},{\"source\":4,\"target\":7,\"value\":1},{\"source\":4,\"target\":8,\"value\":1},{\"source\":5,\"target\":6,\"value\":1},{\"source\":5,\"target\":7,\"value\":1},{\"source\":5,\"target\":8,\"value\":1},{\"source\":6,\"target\":7,\"value\":1},{\"source\":6,\"target\":8,\"value\":1},{\"source\":7,\"target\":8,\"value\":1},{\"source\":0,\"target\":1,\"value\":1},{\"source\":1,\"target\":0,\"value\":1}]}";
-    //var HGJason = "{\"nodes\":[{\"name\":\"0\",\"group\":\"0\",\"HE\":[\"a\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"1\",\"group\":\"1\",\"HE\":[\"a\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"2\",\"group\":\"2\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"3\",\"group\":\"3\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"4\",\"group\":\"4\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"5\",\"group\":\"5\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"6\",\"group\":\"6\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"7\",\"group\":\"7\",\"HE\":[\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"8\",\"group\":\"8\",\"HE\":[\"c\"],\"fontsize\":\"45px\",\"title\":null}],\"links\":[{\"source\":0,\"target\":1,\"value\":1},{\"source\":0,\"target\":2,\"value\":1},{\"source\":0,\"target\":3,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":4,\"value\":1},{\"source\":2,\"target\":5,\"value\":1},{\"source\":2,\"target\":6,\"value\":1},{\"source\":3,\"target\":4,\"value\":1},{\"source\":3,\"target\":5,\"value\":1},{\"source\":3,\"target\":6,\"value\":1},{\"source\":4,\"target\":5,\"value\":1},{\"source\":4,\"target\":6,\"value\":1},{\"source\":5,\"target\":6,\"value\":1},{\"source\":4,\"target\":5,\"value\":1},{\"source\":4,\"target\":6,\"value\":1},{\"source\":4,\"target\":7,\"value\":1},{\"source\":4,\"target\":8,\"value\":1},{\"source\":5,\"target\":6,\"value\":1},{\"source\":5,\"target\":7,\"value\":1},{\"source\":5,\"target\":8,\"value\":1},{\"source\":6,\"target\":7,\"value\":1},{\"source\":6,\"target\":8,\"value\":1},{\"source\":7,\"target\":8,\"value\":1}]}";
-    //var HGJason = "{\"nodes\":[{\"name\":\"0\",\"group\":\"0\",\"HE\":[\"a\"],\"fontsize\":\"10px\",\"title\":null},{\"name\":\"1\",\"group\":\"1\",\"HE\":[\"a\"],\"fontsize\":\"10px\",\"title\":null},{\"name\":\"2\",\"group\":\"2\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"10px\",\"title\":null},{\"name\":\"3\",\"group\":\"3\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"10px\",\"title\":null},{\"name\":\"4\",\"group\":\"4\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"10px\",\"title\":null},{\"name\":\"5\",\"group\":\"5\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"10px\",\"title\":null},{\"name\":\"6\",\"group\":\"6\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"10px\",\"title\":null},{\"name\":\"7\",\"group\":\"7\",\"HE\":[\"c\"],\"fontsize\":\"10px\",\"title\":null},{\"name\":\"8\",\"group\":\"8\",\"HE\":[\"c\"],\"fontsize\":\"10px\",\"title\":null}],\"links\":[{\"source\":0,\"target\":1,\"value\":1},{\"source\":0,\"target\":2,\"value\":1},{\"source\":0,\"target\":3,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":4,\"value\":1},{\"source\":2,\"target\":5,\"value\":1},{\"source\":2,\"target\":6,\"value\":1},{\"source\":3,\"target\":4,\"value\":1},{\"source\":3,\"target\":5,\"value\":1},{\"source\":3,\"target\":6,\"value\":1},{\"source\":4,\"target\":5,\"value\":1},{\"source\":4,\"target\":6,\"value\":1},{\"source\":5,\"target\":6,\"value\":1},{\"source\":4,\"target\":5,\"value\":1},{\"source\":4,\"target\":6,\"value\":1},{\"source\":4,\"target\":7,\"value\":1},{\"source\":4,\"target\":8,\"value\":1},{\"source\":5,\"target\":6,\"value\":1},{\"source\":5,\"target\":7,\"value\":1},{\"source\":5,\"target\":8,\"value\":1},{\"source\":6,\"target\":7,\"value\":1},{\"source\":6,\"target\":8,\"value\":1},{\"source\":7,\"target\":8,\"value\":1}]}";
+            // Get the matrix\hypergraph data
+        hypergraph = incidenceMatrixInput.Matrix;
 
-    HGJason  = flattenMatrix(hypergraph);
-
-   // HGJason = htmlDecode(HGJason);
-
-    //HGJason = $.parseJSON(HGJason);
-
-    createMatrixTable(hypergraph);
-
-    //to edit here to make the line invesible change the stroke color and make it un visible
-    svg.append("svg:rect").attr("width", width).attr("height", height).style("stroke", "#fff").style("fill", "rgb(204, 204, 204)");
-
-    force.nodes(HGJason.nodes)
-        .links(HGJason.links)
-        .gravity(document.getElementById('gravitySlider').value)
-        //.linkDistance(120)
-        .linkDistance(function(n, i) {
-            var l; 
-            n.source.HE.length <= 1 || n.target.HE.length <= 1? l= (parseInt(document.getElementById('attractionSlider').value) + ndoeAdditionalDistance): l=parseInt(document.getElementById('attractionSlider').value); return l;
-
-        })
-        //.charge(600)
-        .charge(function(n, i){  return document.getElementById('repulsionSlider').value;})
-        .linkStrength(0.9)
-        .friction(0.9)
-        .start();
-
-    node = svg.selectAll(".node").data(HGJason.nodes).enter().append("g").attr("class", "node").attr("hyperedges", function(d) {
-        return (d.HE)
-    }).attr('name', function(d) { return d.name;});
-    link = svg.selectAll(".link").data(HGJason.links).enter().append("line").attr("class", "link").style("stroke-opacity", "0.2");
-
-    node.append('circle').attr('r', function(d) {
-        var tmprad = parseInt(d.fontsize.replace('px', '')) * (d.name.length / 3);
-        if (tmprad > r) r = tmprad;
-        return tmprad;
-    }).style('fill', '#ffffff').style('stroke', function(d) {
-        return color(d.group)
-    });
-
-        //Set up tooltip
-    var tip = d3.tip()
-        .attr('class', 'd3-tip') //tooltips   d3-tip
-        .offset([-10, 0])
-        .html(function (d) {
-        return  d.name + "";
-
-
-    })
-    svg.call(tip);
- 
-    node.selectAll('text').data(HGJason.nodes).enter().append("text").attr("text-anchor", "middle").attr("dx", 2).attr("dy", ".35em").attr('original-title', function(d) {
-        return d.title
-    }).attr("style", function(d) {
-        return "font-size:" + d.fontsize
-    }).text(function(d) {
-       // console.log(d);
-        return d.name
-        //return d.x + ',' + d.y;
-    }).attr("style", function(d) {
-        return "font-size:" + d.fontsize
-    })/*.style('fill', function(d) {
-        return color(d.group);
-    })*/.style("cursor", "pointer").call(force.drag).on('click', tip.show).on('mouseout', tip.hide);
-
-    var cx = new Array();
-    var cy = new Array();
-
-    node.attr("cx", function(d) {
-        cx.push(d.x);
-    }).attr("cy", function(d) {
-        cy.push(d.y);
-    });
+        // Number of rows\Hyperedges
+        var numOfRows = hypergraph.length; // Input from user
         
-    cx.forEach(function(o, i) {
-        vertices.push(new Array(cx[i], cy[i]));
-    });
+        // Number of cols/vertices
+        var numOfCols = hypergraph[0][1].length;
 
-    //var nodes = vertices.map(Object);
-    // var groups = d3.nest().key(function(d) {
+        function d3_visualize() {
 
-    //    //console.log(d);
-    //     return $(d).attr("grp");
-    // }).entries(node[0]);
-    // console.log(node[0]);
+        $("#renderingPanel").html('');
 
-    //console.log(node[0]);
-    //console.log(groups);
+        width = $('#renderingPanel').width() - 20;
+        height = $('#renderingPanel').height() - 20;
 
-    //*****************
-    // Buidling the above map manually without using the nest function
-    var groups = [];        // The final groups map
-    var keys = [];          // Keys = the names of hyperedges
-    var groupsObj = {};     // A temp object to hold grouped nodes. 
-                            // This is used to utilize the hashtable property in JavaScript so we don't have to check for duplicate keys
+        var force = d3.layout.force().size([width, height]);
+        var svg = d3.select("#renderingPanel").append("svg").attr("width", width).attr("height", height).attr("transform", "translate(" + width / 2 + "," + height / 2 + ")").style({"padding-top": "9px", "padding-left":"9px"});
+        // Example #2
+        //var HGJason = "{\"nodes\":[{\"name\":\"0\",\"group\":\"0\",\"HE\":[\"a\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"1\",\"group\":\"1\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"2\",\"group\":\"2\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"3\",\"group\":\"3\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"4\",\"group\":\"4\",\"HE\":[\"b\"],\"fontsize\":\"45px\",\"title\":null}],\"links\":[{\"source\":0,\"target\":1,\"value\":1},{\"source\":0,\"target\":2,\"value\":1},{\"source\":0,\"target\":3,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":3,\"value\":1},{\"source\":1,\"target\":4,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":4,\"value\":1},{\"source\":3,\"target\":4,\"value\":1},{\"source\":0,\"target\":4,\"value\":1}]}";
+        //var HGJason = "{\"nodes\":[{\"name\":\"0\",\"group\":\"0\",\"HE\":[\"a\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"1\",\"group\":\"1\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"2\",\"group\":\"2\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"3\",\"group\":\"3\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"4\",\"group\":\"4\",\"HE\":[\"b\"],\"fontsize\":\"45px\",\"title\":null}],\"links\":[{\"source\":0,\"target\":1,\"value\":1},{\"source\":0,\"target\":2,\"value\":1},{\"source\":0,\"target\":3,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":3,\"value\":1},{\"source\":1,\"target\":4,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":4,\"value\":1},{\"source\":3,\"target\":4,\"value\":1}]}";
+        
+        // Example #3
+       //var HGJason = "{\"nodes\":[{\"name\":\"0\",\"group\":\"0\",\"HE\":[\"a\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"1\",\"group\":\"1\",\"HE\":[\"a\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"2\",\"group\":\"2\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"3\",\"group\":\"3\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"4\",\"group\":\"4\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"5\",\"group\":\"5\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"6\",\"group\":\"6\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"7\",\"group\":\"7\",\"HE\":[\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"8\",\"group\":\"8\",\"HE\":[\"c\"],\"fontsize\":\"45px\",\"title\":null}],\"links\":[{\"source\":0,\"target\":1,\"value\":1},{\"source\":0,\"target\":2,\"value\":1},{\"source\":0,\"target\":3,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":4,\"value\":1},{\"source\":2,\"target\":5,\"value\":1},{\"source\":2,\"target\":6,\"value\":1},{\"source\":3,\"target\":4,\"value\":1},{\"source\":3,\"target\":5,\"value\":1},{\"source\":3,\"target\":6,\"value\":1},{\"source\":4,\"target\":5,\"value\":1},{\"source\":4,\"target\":6,\"value\":1},{\"source\":5,\"target\":6,\"value\":1},{\"source\":4,\"target\":5,\"value\":1},{\"source\":4,\"target\":6,\"value\":1},{\"source\":4,\"target\":7,\"value\":1},{\"source\":4,\"target\":8,\"value\":1},{\"source\":5,\"target\":6,\"value\":1},{\"source\":5,\"target\":7,\"value\":1},{\"source\":5,\"target\":8,\"value\":1},{\"source\":6,\"target\":7,\"value\":1},{\"source\":6,\"target\":8,\"value\":1},{\"source\":7,\"target\":8,\"value\":1},{\"source\":0,\"target\":1,\"value\":1},{\"source\":1,\"target\":0,\"value\":1}]}";
+        //var HGJason = "{\"nodes\":[{\"name\":\"0\",\"group\":\"0\",\"HE\":[\"a\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"1\",\"group\":\"1\",\"HE\":[\"a\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"2\",\"group\":\"2\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"3\",\"group\":\"3\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"4\",\"group\":\"4\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"5\",\"group\":\"5\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"6\",\"group\":\"6\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"7\",\"group\":\"7\",\"HE\":[\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"8\",\"group\":\"8\",\"HE\":[\"c\"],\"fontsize\":\"45px\",\"title\":null}],\"links\":[{\"source\":0,\"target\":1,\"value\":1},{\"source\":0,\"target\":2,\"value\":1},{\"source\":0,\"target\":3,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":4,\"value\":1},{\"source\":2,\"target\":5,\"value\":1},{\"source\":2,\"target\":6,\"value\":1},{\"source\":3,\"target\":4,\"value\":1},{\"source\":3,\"target\":5,\"value\":1},{\"source\":3,\"target\":6,\"value\":1},{\"source\":4,\"target\":5,\"value\":1},{\"source\":4,\"target\":6,\"value\":1},{\"source\":5,\"target\":6,\"value\":1},{\"source\":4,\"target\":5,\"value\":1},{\"source\":4,\"target\":6,\"value\":1},{\"source\":4,\"target\":7,\"value\":1},{\"source\":4,\"target\":8,\"value\":1},{\"source\":5,\"target\":6,\"value\":1},{\"source\":5,\"target\":7,\"value\":1},{\"source\":5,\"target\":8,\"value\":1},{\"source\":6,\"target\":7,\"value\":1},{\"source\":6,\"target\":8,\"value\":1},{\"source\":7,\"target\":8,\"value\":1}]}";
+        //var HGJason = "{\"nodes\":[{\"name\":\"0\",\"group\":\"0\",\"HE\":[\"a\"],\"fontsize\":\"10px\",\"title\":null},{\"name\":\"1\",\"group\":\"1\",\"HE\":[\"a\"],\"fontsize\":\"10px\",\"title\":null},{\"name\":\"2\",\"group\":\"2\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"10px\",\"title\":null},{\"name\":\"3\",\"group\":\"3\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"10px\",\"title\":null},{\"name\":\"4\",\"group\":\"4\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"10px\",\"title\":null},{\"name\":\"5\",\"group\":\"5\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"10px\",\"title\":null},{\"name\":\"6\",\"group\":\"6\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"10px\",\"title\":null},{\"name\":\"7\",\"group\":\"7\",\"HE\":[\"c\"],\"fontsize\":\"10px\",\"title\":null},{\"name\":\"8\",\"group\":\"8\",\"HE\":[\"c\"],\"fontsize\":\"10px\",\"title\":null}],\"links\":[{\"source\":0,\"target\":1,\"value\":1},{\"source\":0,\"target\":2,\"value\":1},{\"source\":0,\"target\":3,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":4,\"value\":1},{\"source\":2,\"target\":5,\"value\":1},{\"source\":2,\"target\":6,\"value\":1},{\"source\":3,\"target\":4,\"value\":1},{\"source\":3,\"target\":5,\"value\":1},{\"source\":3,\"target\":6,\"value\":1},{\"source\":4,\"target\":5,\"value\":1},{\"source\":4,\"target\":6,\"value\":1},{\"source\":5,\"target\":6,\"value\":1},{\"source\":4,\"target\":5,\"value\":1},{\"source\":4,\"target\":6,\"value\":1},{\"source\":4,\"target\":7,\"value\":1},{\"source\":4,\"target\":8,\"value\":1},{\"source\":5,\"target\":6,\"value\":1},{\"source\":5,\"target\":7,\"value\":1},{\"source\":5,\"target\":8,\"value\":1},{\"source\":6,\"target\":7,\"value\":1},{\"source\":6,\"target\":8,\"value\":1},{\"source\":7,\"target\":8,\"value\":1}]}";
 
-    var nodeName;
-    // Loop through all nodes
-    node[0].forEach(function(n) { 
+        HGJason  = flattenMatrix(hypergraph);
 
-        // Get the each node's hyperedges list in which they belong to
-        keys = ($(n).attr("hyperedges")).split(",");
+       // HGJason = htmlDecode(HGJason);
 
-        // Add each key to our groups. Each key is a hyperedge
-        keys.forEach(function(k) { 
+        //HGJason = $.parseJSON(HGJason);
 
-            // Existing key
-            if(groupsObj[k] != undefined) {
+        createMatrixTable(hypergraph);
 
-                // Add the current node to the key (i.e. to the hyperedge)
-                groupsObj[k].values.push(n);
-            } 
-            else // A new key
-            {
-                // Create a new key
-                groupsObj[k] = {"key": k, "values": []};
+        //to edit here to make the line invesible change the stroke color and make it un visible
+        svg.append("svg:rect").attr("width", width).attr("height", height).style("stroke", "#fff").style("fill", "rgb(204, 204, 204)");
 
-                // Add the current node to the key (i.e. to the hyperedge)
-                groupsObj[k].values.push(n);
-            }
+        force.nodes(HGJason.nodes)
+            .links(HGJason.links)
+            .gravity(document.getElementById('gravitySlider').value)
+            .linkDistance(function(n, i) {
+                var l; 
+                n.source.HE.length <= 1 || n.target.HE.length <= 1? l= (parseInt(document.getElementById('attractionSlider').value) + ndoeAdditionalDistance): l=parseInt(document.getElementById('attractionSlider').value); return l;
+
+            })
+            .charge(function(n, i){  return document.getElementById('repulsionSlider').value;})
+            .linkStrength(0.9)
+            .friction(0.9)
+            .start();
+
+        node = svg.selectAll(".node").data(HGJason.nodes).enter().append("g").attr("class", "node").attr("hyperedges", function(d) {
+            return (d.HE)
+        }).attr('name', function(d) { return d.name;});
+        link = svg.selectAll(".link").data(HGJason.links).enter().append("line").attr("class", "link").style("stroke-opacity", "0.2");
+
+        node.append('circle').attr('r', function(d) {
+            var tmprad = parseInt(d.fontsize.replace('px', '')) * (d.name.length / 3);
+            if (tmprad > r) r = tmprad;
+            return tmprad;
+        }).style('fill', '#ffffff').style('stroke', function(d) {
+            return color(d.group)
         });
 
+            //Set up tooltip
+        var tip = d3.tip()
+            .attr('class', 'd3-tip') //tooltips   d3-tip
+            .offset([-10, 0])
+            .html(function (d) {
+            return  d.name + "";
 
-    });
 
-    // Convert the list of objects into an array
-    for(var i in groupsObj) {
-
-        groups.push(groupsObj[i]);
-    }
-    //****
-
-    var getRadius = function(x,y,d) {
-        var margin = 10;
-        for(var i in d.values) {
-            i = d.values[i];
-            if(parseInt($(i).attr("cx")) == x && parseInt($(i).attr("cy")) == y) {
-                return parseInt($(i.childNodes[0]).attr("r"))+margin;
-            }
-        }
-        return 100+margin;
-    }
-            
+        })
+        svg.call(tip);
      
-    var groupPath = function(data) {
+        node.selectAll('text').data(HGJason.nodes).enter().append("text").attr("text-anchor", "middle").attr("dx", 2).attr("dy", ".35em").attr('original-title', function(d) {
+            return d.title
+        }).attr("style", function(d) {
+            return "font-size:" + d.fontsize
+        }).text(function(d) {
+           // console.log(d);
+            return d.name
+            //return d.x + ',' + d.y;
+        }).attr("style", function(d) {
+            return "font-size:" + d.fontsize
+        })/*.style('fill', function(d) {
+            return color(d.group);
+        })*/.style("cursor", "pointer").call(force.drag).on('click', tip.show).on('mouseout', tip.hide);
 
-        var corners = d3.geom.hull(data.values.map(function(i) {
-            // if ($(i) == undefined) return;
+        var cx = new Array();
+        var cy = new Array();
+
+        node.attr("cx", function(d) {
+            cx.push(d.x);
+        }).attr("cy", function(d) {
+            cy.push(d.y);
+        });
             
-            //console.log($(i));
+        cx.forEach(function(o, i) {
+            vertices.push(new Array(cx[i], cy[i]));
+        });
 
-            // console.log("Inside hull: ");
-            // console.log(val);
+        //var nodes = vertices.map(Object);
+        // var groups = d3.nest().key(function(d) {
 
-            return [$(i).attr("cx"), $(i).attr("cy"), $(i).attr('name')]; // ** NOTE: node name has been added for debugging; it is not needed.
-        }));
+        //    //console.log(d);
+        //     return $(d).attr("grp");
+        // }).entries(node[0]);
+        // console.log(node[0]);
 
-        // console.log("done hull");
+        //console.log(node[0]);
+        //console.log(groups);
 
-        if(corners.length == 0) {return "";}
+        //*****************
+        // Buidling the above map manually without using the nest function
+        var groups = [];        // The final groups map
+        var keys = [];          // Keys = the names of hyperedges
+        var groupsObj = {};     // A temp object to hold grouped nodes. 
+                                // This is used to utilize the hashtable property in JavaScript so we don't have to check for duplicate keys
 
-        // console.log("Inside grouPath: ");
-        // console.log(corners);
+        var nodeName;
+        // Loop through all nodes
+        node[0].forEach(function(n) { 
 
-        //console.log(corners);
-        var x1 = parseInt(corners[corners.length - 1][0]);
-        var y1 = parseInt(corners[corners.length - 1][1]);
-        var x2 = parseInt(corners[0][0]);
-        var y2 = parseInt(corners[0][1]);
-        var r1 = getRadius(x1,y1,data);
-        var r2 = getRadius(x2,y2,data);
-        var dx = (x2-x1);
-        var dy = (y2-y1);
-        var d = Math.sqrt(dx*dx + dy*dy);
-        var calpha = (d!=0)?(r1 - r2)/d:0;
-        var salpha = Math.sqrt(1-(calpha*calpha));
-        var x2p = x2 + r2/d * ( salpha * dx + calpha * dy);
-        var y2p = y2 + r2/d * (salpha * dy + calpha * dx);
-        var ret = "M"+x2p+","+y2p;
-        for(var i = 0;i<corners.length;i++) {
-            var x1 = parseInt(corners[i][0]);
-            var y1 = parseInt(corners[i][1]);
-            var x2 = parseInt(corners[(i+1)%corners.length][0]);
-            var y2 = parseInt(corners[(i+1)%corners.length][1]);
+            // Get the each node's hyperedges list in which they belong to
+            keys = ($(n).attr("hyperedges")).split(",");
+
+            // If the key is empty, then this node does not belong to any hyperedge
+            // so we ignore it to avoid drawing hyperedge arround the group of nodes
+            // that do not belong to any hyperedge
+            if(keys[0] != "") {
+
+                // Add each key to our groups. Each key is a hyperedge
+                keys.forEach(function(k) { 
+
+                    // Existing key
+                    if(groupsObj[k] != undefined) {
+
+                        // Add the current node to the key (i.e. to the hyperedge)
+                        groupsObj[k].values.push(n);
+                    } 
+                    else // A new key
+                    {
+                        // Create a new key
+                        groupsObj[k] = {"key": k, "values": []};
+
+                        // Add the current node to the key (i.e. to the hyperedge)
+                        groupsObj[k].values.push(n);
+                    }
+                });
+            }   
+
+        });
+
+        // Convert the list of objects into an array
+        for(var i in groupsObj) {
+
+            groups.push(groupsObj[i]);
+        }
+        //****
+
+        var getRadius = function(x,y,d) {
+            var margin = 10;
+            for(var i in d.values) {
+                i = d.values[i];
+                if(parseInt($(i).attr("cx")) == x && parseInt($(i).attr("cy")) == y) {
+                    return parseInt($(i.childNodes[0]).attr("r"))+margin;
+                }
+            }
+            return 100+margin;
+        }
+                
+         
+        var groupPath = function(data) {
+
+            var corners = d3.geom.hull(data.values.map(function(i) {
+                // if ($(i) == undefined) return;
+                
+                //console.log($(i));
+
+                // console.log("Inside hull: ");
+                // console.log(val);
+
+                return [$(i).attr("cx"), $(i).attr("cy"), $(i).attr('name')]; // ** NOTE: node name has been added for debugging; it is not needed.
+            }));
+
+            // console.log("done hull");
+
+            if(corners.length == 0) {return "";}
+
+            // console.log("Inside grouPath: ");
+            // console.log(corners);
+
+            //console.log(corners);
+            var x1 = parseInt(corners[corners.length - 1][0]);
+            var y1 = parseInt(corners[corners.length - 1][1]);
+            var x2 = parseInt(corners[0][0]);
+            var y2 = parseInt(corners[0][1]);
             var r1 = getRadius(x1,y1,data);
             var r2 = getRadius(x2,y2,data);
             var dx = (x2-x1);
             var dy = (y2-y1);
             var d = Math.sqrt(dx*dx + dy*dy);
-           
-           // console.log(d);  
-
             var calpha = (d!=0)?(r1 - r2)/d:0;
             var salpha = Math.sqrt(1-(calpha*calpha));
+            var x2p = x2 + r2/d * ( salpha * dx + calpha * dy);
+            var y2p = y2 + r2/d * (salpha * dy + calpha * dx);
+            var ret = "M"+x2p+","+y2p;
+            for(var i = 0;i<corners.length;i++) {
+                var x1 = parseInt(corners[i][0]);
+                var y1 = parseInt(corners[i][1]);
+                var x2 = parseInt(corners[(i+1)%corners.length][0]);
+                var y2 = parseInt(corners[(i+1)%corners.length][1]);
+                var r1 = getRadius(x1,y1,data);
+                var r2 = getRadius(x2,y2,data);
+                var dx = (x2-x1);
+                var dy = (y2-y1);
+                var d = Math.sqrt(dx*dx + dy*dy);
+               
+               // console.log(d);  
+
+                var calpha = (d!=0)?(r1 - r2)/d:0;
+                var salpha = Math.sqrt(1-(calpha*calpha));
 
 
-            var x1p = x1 + r2/d * ( -salpha * dy + calpha * dx);
-            var y1p = y1 + r1/d * (-salpha * dy  + calpha * dx);
-            var x2p = x2 + r2/d * ( calpha * dy + salpha * dx);
-            var y2p = y2 + r2/d * (salpha * dx  -calpha * dy);
+                var x1p = x1 + r2/d * ( -salpha * dy + calpha * dx);
+                var y1p = y1 + r1/d * (-salpha * dy  + calpha * dx);
+                var x2p = x2 + r2/d * ( calpha * dy + salpha * dx);
+                var y2p = y2 + r2/d * (salpha * dx  -calpha * dy);
 
-            //ret += "L"+x1p+","+y1p+"L"+x2p+","+y2p;
-            ret += " A "+r1+","+r1+" 0 0 1 "+x1p+","+y1p+"L"+x2p+","+y2p;
-            //ret = ret.replace(/NaN/g, '0')
+                //ret += "L"+x1p+","+y1p+"L"+x2p+","+y2p;
+                ret += " A "+r1+","+r1+" 0 0 1 "+x1p+","+y1p+"L"+x2p+","+y2p;
+                //ret = ret.replace(/NaN/g, '0')
+            }
+           //console.log(ret);
+            return ret;
+        };
+
+        /*var groupPath = function(d) {
+            var result = "M" + d3.geom.hull(d.values.map(function(i) {
+                console.log(i);
+                return [$(i).attr("cx"), $(i).attr("cy")];
+            })).join("L") + "Z";
+
+            return result;
+        };*/
+        
+        var groupFill = function(d, i) {
+            return color(d.key);
+        };
+
+       // svg.style("opacity", 1e-6).transition().duration(1000).style("opacity", 1);
+
+
+        force.on("tick", function() {
+            
+
+            // (x1,y1) o-------------o (x2,y2)
+            link.attr("x1", function(d) {
+                return d.source.x;
+            }).attr("y1", function(d) {
+                return d.source.y;
+            }).attr("x2", function(d) {
+                return d.target.x;
+            }).attr("y2", function(d) {
+                return d.target.y;
+            });
+
+            // nodes\verteces locations
+            // node = all g SVG elements. HTML tag example: <g ... cx='100' cy='20' .. 
+            // Please note: both attributes updates ONLY data object associated with each element. It does NOT make the changes effective\visible 
+            // to the end user untill we do the transformation  below. 
+            node.attr("cx", function(d) {
+                return d.x = Math.max(r, Math.min(width - r, d.x)); // to make sure it is within our SVG area width 
+            }).attr("cy", function(d) {
+                return d.y = Math.max(r, Math.min(height - r, d.y)); // to make sure it is within our SVG area height
+            });
+
+            // After the above updates to the data objects associated with each g elemnt (each node), we
+            // apply transformation to make changes visible (i.e. render HTML\SVG updates to be visible to the end user)
+            node.selectAll('circle').attr("transform", function(d) {
+                return "translate(" + d.x + "," + d.y + ")"
+            });
+
+            // reposition text
+            // Same as the above node's transformation 
+            node.selectAll('text').attr("transform", function(d) {
+                return "translate(" + d.x + "," + d.y + ")"
+            });
+
+            // For debuggin purpose: display the x,y cooredinates on the nodes instead of their names
+            //node.selectAll('text').text(function(d) {
+               // return  parseFloat(d.x).toFixed(2) +","+ parseFloat(d.y).toFixed(2);
+            //});
+
+          svg.selectAll("path")
+            .data(groups)
+            .attr("d", groupPath)
+            .enter().insert("path", "g")
+            .style("fill", groupFill)
+            .style("stroke", groupFill)
+            .style("stroke-width", 1)
+            .style("stroke-linejoin", "round")
+            .style("opacity", .2);
+
+
+        });
+        d3.select("#gravitySlider").on("input", function() { 
+            force.stop();
+            var newGravity = document.getElementById('gravitySlider').value;
+            var newCharge = document.getElementById('repulsionSlider').value;
+            var newLStrength = document.getElementById('attractionSlider').value;
+            
+            document.getElementById('gravityInput').value = newGravity;
+            document.getElementById('repulsionInput').value = newCharge;
+            document.getElementById('attractionInput').value = newLStrength;
+
+            force
+            .charge(newCharge)
+            .linkDistance(function(n, i) {
+                var l; 
+                n.source.HE.length <= 1 || n.target.HE.length <= 1? l=( parseInt(newLStrength) + ndoeAdditionalDistance): l=newLStrength; return l;
+
+            })
+            .gravity(newGravity).start();
+      
+            });
+           
+        d3.select("#attractionSlider").on("input", function() { 
+            force.stop();
+            var newGravity = document.getElementById('gravitySlider').value;
+            var newCharge = document.getElementById('repulsionSlider').value;
+            var newLStrength = document.getElementById('attractionSlider').value;
+            
+            document.getElementById('gravityInput').value = newGravity;
+            document.getElementById('repulsionInput').value = newCharge;
+            document.getElementById('attractionInput').value = newLStrength;
+
+            force
+            .charge(newCharge)
+            .linkDistance(function(n, i) {
+                var l; 
+                n.source.HE.length <= 1 || n.target.HE.length <= 1? l=( parseInt(newLStrength) + ndoeAdditionalDistance): l=newLStrength; return l;
+
+            })
+            .gravity(newGravity).start();
+      
+            });
+
+        d3.select("#repulsionSlider").on("input", function() { 
+            force.stop();
+            var newGravity = document.getElementById('gravitySlider').value;
+            var newCharge = document.getElementById('repulsionSlider').value;
+            var newLStrength = document.getElementById('attractionSlider').value;
+            
+            document.getElementById('gravityInput').value = newGravity;
+            document.getElementById('repulsionInput').value = newCharge;
+            document.getElementById('attractionInput').value = newLStrength;
+
+            force
+            .charge(newCharge)
+            .linkDistance(function(n, i) {
+                var l; 
+                n.source.HE.length <= 1 || n.target.HE.length <= 1? l=( parseInt(newLStrength) + ndoeAdditionalDistance): l=newLStrength; return l;
+
+            })
+            .gravity(newGravity).start();
+      
+            });
+
+        d3.select("#dark-theme").on("click", function () {
+
+            d3.select("body").attr("class", "dark");
+            d3.selectAll("#dark-theme").attr("disabled", "disabled");
+            d3.selectAll("#light-theme").attr("disabled", null);
+            svg.selectAll('rect').style("fill", "#131313");
+
+        });
+
+       d3.select("#light-theme").on("click", function () {
+            d3.select("body").attr("class", null);
+            d3.selectAll("#light-theme").attr("disabled", "disabled");
+            d3.selectAll("#dark-theme").attr("disabled", null);
+            svg.selectAll('rect').style("fill", "#fff");
+
+        });
+
         }
-       //console.log(ret);
-        return ret;
-    };
 
-    /*var groupPath = function(d) {
-        var result = "M" + d3.geom.hull(d.values.map(function(i) {
-            console.log(i);
-            return [$(i).attr("cx"), $(i).attr("cy")];
-        })).join("L") + "Z";
+        d3_visualize();
 
-        return result;
-    };*/
-    
-    var groupFill = function(d, i) {
-        return color(d.key);
-    };
+    function restart() {
 
-   // svg.style("opacity", 1e-6).transition().duration(1000).style("opacity", 1);
+        force.nodes([]);
+        force.links([]);
+
+        link = link.data(HGJason.links);
+        link.exit().remove();
+        link.enter().insert("line").attr("class", "link").style("stroke-opacity", "0.2");
+
+        node = node.data(HGJason.nodes);
+        //node.exit().remove();
+        node.enter().insert("circle", ".cursor").attr("class", "node").attr("r", 5).call(force.drag);
 
 
-    force.on("tick", function() {
-        
+        node.enter().insert("g").attr("class", "node").attr("hyperedges", function(d) {
+            return (d.HE)
+        }).attr('name', function(d) { return d.name;});
 
-        // (x1,y1) o-------------o (x2,y2)
-        link.attr("x1", function(d) {
-            return d.source.x;
-        }).attr("y1", function(d) {
-            return d.source.y;
-        }).attr("x2", function(d) {
-            return d.target.x;
-        }).attr("y2", function(d) {
-            return d.target.y;
-        });
-
-        // nodes\verteces locations
-        // node = all g SVG elements. HTML tag example: <g ... cx='100' cy='20' .. 
-        // Please note: both attributes updates ONLY data object associated with each element. It does NOT make the changes effective\visible 
-        // to the end user untill we do the transformation  below. 
-        node.attr("cx", function(d) {
-            return d.x = Math.max(r, Math.min(width - r, d.x)); // to make sure it is within our SVG area width 
-        }).attr("cy", function(d) {
-            return d.y = Math.max(r, Math.min(height - r, d.y)); // to make sure it is within our SVG area height
-        });
-
-        // After the above updates to the data objects associated with each g elemnt (each node), we
-        // apply transformation to make changes visible (i.e. render HTML\SVG updates to be visible to the end user)
-        node.selectAll('circle').attr("transform", function(d) {
-            return "translate(" + d.x + "," + d.y + ")"
-        });
-
-        // reposition text
-        // Same as the above node's transformation 
-        node.selectAll('text').attr("transform", function(d) {
-            return "translate(" + d.x + "," + d.y + ")"
-        });
-
-        // For debuggin purpose: display the x,y cooredinates on the nodes instead of their names
-/*        node.selectAll('text').text(function(d) {
-            return  parseFloat(d.x).toFixed(2) +","+ parseFloat(d.y).toFixed(2);
-        });*/
-
-      svg.selectAll("path")
-        .data(groups)
-        .attr("d", groupPath)
-        .enter().insert("path", "g")
-        .style("fill", groupFill)
-        .style("stroke", groupFill)
-        .style("stroke-width", 1)
-        .style("stroke-linejoin", "round")
-        .style("opacity", .2);
-
-
-    });
-    d3.select("#gravitySlider").on("input", function() { 
-        force.stop();
-        var newGravity = document.getElementById('gravitySlider').value;
-        var newCharge = document.getElementById('repulsionSlider').value;
-        var newLStrength = document.getElementById('attractionSlider').value;
-        
-        document.getElementById('gravityInput').value = newGravity;
-        document.getElementById('repulsionInput').value = newCharge;
-        document.getElementById('attractionInput').value = newLStrength;
-
-        force
-        .charge(newCharge)
-        .linkDistance(function(n, i) {
-            var l; 
-            n.source.HE.length <= 1 || n.target.HE.length <= 1? l=( parseInt(newLStrength) + ndoeAdditionalDistance): l=newLStrength; return l;
-
-        })
-        .gravity(newGravity).start();
-  
-        });
-       
-    d3.select("#attractionSlider").on("input", function() { 
-        force.stop();
-        var newGravity = document.getElementById('gravitySlider').value;
-        var newCharge = document.getElementById('repulsionSlider').value;
-        var newLStrength = document.getElementById('attractionSlider').value;
-        
-        document.getElementById('gravityInput').value = newGravity;
-        document.getElementById('repulsionInput').value = newCharge;
-        document.getElementById('attractionInput').value = newLStrength;
-
-        force
-        .charge(newCharge)
-        .linkDistance(function(n, i) {
-            var l; 
-            n.source.HE.length <= 1 || n.target.HE.length <= 1? l=( parseInt(newLStrength) + ndoeAdditionalDistance): l=newLStrength; return l;
-
-        })
-        .gravity(newGravity).start();
-  
-        });
-
-    d3.select("#repulsionSlider").on("input", function() { 
-        force.stop();
-        var newGravity = document.getElementById('gravitySlider').value;
-        var newCharge = document.getElementById('repulsionSlider').value;
-        var newLStrength = document.getElementById('attractionSlider').value;
-        
-        document.getElementById('gravityInput').value = newGravity;
-        document.getElementById('repulsionInput').value = newCharge;
-        document.getElementById('attractionInput').value = newLStrength;
-
-        force
-        .charge(newCharge)
-        .linkDistance(function(n, i) {
-            var l; 
-            n.source.HE.length <= 1 || n.target.HE.length <= 1? l=( parseInt(newLStrength) + ndoeAdditionalDistance): l=newLStrength; return l;
-
-        })
-        .gravity(newGravity).start();
-  
-        });
-
-    d3.select("#dark-theme").on("click", function () {
-
-        d3.select("body").attr("class", "dark");
-        d3.selectAll("#dark-theme").attr("disabled", "disabled");
-        d3.selectAll("#light-theme").attr("disabled", null);
-        svg.selectAll('rect').style("fill", "#131313");
-
-    });
-
-   d3.select("#light-theme").on("click", function () {
-        d3.select("body").attr("class", null);
-        d3.selectAll("#light-theme").attr("disabled", "disabled");
-        d3.selectAll("#dark-theme").attr("disabled", null);
-        svg.selectAll('rect').style("fill", "#fff");
-
- });
  
-
+        force.start();
+    }
 
 
     function createMatrixTable(hg) {
     // Sample input which would come from JSON file. 
-/*  var hg = {
-    "V":8,
-    "E":6,
-    "K":27,
-    "Matrix":[
-                    ["a", [ 1, 1, 0, 1, 1, 1, 1, 1 ]],
-                    ["b", [ 0, 0, 0, 1, 0, 0, 1, 0 ]],
-                    ["c", [ 1, 0, 0, 1, 1, 0, 1, 1 ]],
-                    ["d", [ 0, 0, 1, 1, 1, 0, 0, 1 ]],
-                    ["e", [ 0, 1, 1, 0, 0, 1, 1, 0 ]],
-                    ["f", [ 1, 1, 1, 0, 1, 0, 0, 1 ]]
-                ]
-    };*/
+  // var hg = {
+  //   "V":8,
+  //   "E":6,
+  //   "K":27,
+  //   "Matrix":[
+  //                   ["a", [ 1, 1, 0, 1, 1, 1, 1, 1 ]],
+  //                   ["b", [ 0, 0, 0, 1, 0, 0, 1, 0 ]],
+  //                   ["c", [ 1, 0, 0, 1, 1, 0, 1, 1 ]],
+  //                   ["d", [ 0, 0, 1, 1, 1, 0, 0, 1 ]],
+  //                   ["e", [ 0, 1, 1, 0, 0, 1, 1, 0 ]],
+  //                   ["f", [ 1, 1, 1, 0, 1, 0, 0, 1 ]]
+  //               ]
+  //   };
 
     // We get the matrix only, other data are not really needed 
     //var inputHG = hg.Matrix;
@@ -443,7 +504,7 @@ $(function() {
     var verticesNamesTable = $('<table><tr></tr></table>').attr('id', 'vertNamesTable');
 
     // Create vertices' name headers
-    verticesNamesTable = createColHeader(verticesNamesTable);
+    verticesNamesTable = createColHeader(verticesNamesTable, inputHG);
 
     // Hyperedges' names table
     var hyperedgesNamesTable = $('<table></table>').attr('id', 'HENamesTable');
@@ -482,6 +543,8 @@ $(function() {
     $('#addCol').on('click', inputHG, addVertex);
     $('#addRow').on('click', inputHG, addHyperedge);
 
+    updateMatrixStats();
+
     /******
     *   
     *
@@ -492,9 +555,10 @@ $(function() {
     */
 }
     // Cols headers
-    function createColHeader(verticesNamesTable) {
+    function createColHeader(verticesNamesTable, inputHG) {
         // Create the vertices names table
-
+        // Number of cols/vertices
+        var numOfCols = inputHG[0][1].length;
         for (var i = 0; i < numOfCols; i++) {
             
             var vertexName = '<td>' + i + '</td>';
@@ -508,6 +572,7 @@ $(function() {
     function createRowsHeader(hyperedgesNamesTable, inputHG) {
 
         // Create the hyperedges names table
+        var numOfRows = inputHG.length;
         for (var i = 0; i < numOfRows; i++) {
         
             var inputBox = createMatrixHeaderCell(inputHG[i][0]);
@@ -526,6 +591,8 @@ $(function() {
     function createMatrixDataTable(matrixDataTable, inputHG) {
 
         // Create the main data table
+        var numOfRows = inputHG.length;
+        var numOfCols = inputHG[0][1].length;
         for (var i = 0; i < numOfRows; i++) {
         
             var hyperedge = $('<tr></tr>');
@@ -662,7 +729,7 @@ $(function() {
                     var numOfCols = inputHG[0][1].length;
 
                     // Get the new row name -- the last one which has been added lastly
-                    var newRowName = $('#HENamesTable td').last().text();
+                    var newRowName = $('#HENamesTable td input').last().val();
 
                     // Create a new array initialized with zeros
                     var newRowArray = [];
@@ -698,7 +765,7 @@ $(function() {
                     inputHG[$(source).attr('row')][1][$(source).attr('col')] = parseInt($(source).val());
 
                     //console.log($(source).attr('row') + ',' + $(source).attr('col'));
-                    //console.log(inputHG);
+                    console.log(inputHG);
             break;
         }
     }
@@ -750,6 +817,12 @@ $(function() {
         // Update matrix size 
         updateMatrixSize(HG);
 
+        // Update stats
+        //updateMatrixStats();
+
+        // Refresh 
+        d3_visualize();
+
         //console.log(HG);
 
     }
@@ -798,6 +871,10 @@ $(function() {
         // Update matrix size 
         updateMatrixSize(HG);
 
+        // Update matrix stats
+        updateMatrixStats();
+
+        //d3_visualize();
         //console.log(HG);
     }
 
@@ -860,6 +937,11 @@ $(function() {
                                     updateHypergraph(inputHG, 'cell', this);
                                     console.log($(this).val());
 
+                                    d3_visualize();
+
+                                    var nextFocusedCell = parseInt($(this).attr('col')) + 1;
+                                    $(this).parent().parent().children().eq(nextFocusedCell).children().eq(0).focus();
+                                    //console.log($(this).parent().parent().children().eq(nextFocusedCell).children().eq(0));
                                     // Flatten
                                     //HGJason  = flattenMatrix(hypergraph);
                                     
@@ -867,6 +949,55 @@ $(function() {
 
         return inputBox;
     }
+
+    function updateMatrixStats() {
+
+        // Get the number of vertices
+        var numOfVertices = hypergraph[0][1].length;
+         $('#numOfVertices').text(numOfVertices);
+
+        // Get the number of edges
+        var numOfHyperedges = hypergraph.length;
+        $('#numOfHyperedges').text(numOfHyperedges);
+
+        // Get the cardinality K
+        var cardinalityK = 0; 
+        // Get the maxRank -> the edges with highest number of vertices
+        var maxEdgesRanks = 0;
+        var verticesCount = 0;
+
+        for (var i = 0; i < numOfHyperedges; i++) {
+            
+            verticesCount = 0;
+            for (var col = 0; col < numOfVertices; col++) {
+                if (hypergraph[i][1][col] == 1) {
+                    cardinalityK++;
+                    verticesCount++;
+                };
+            }
+
+            if(verticesCount > maxEdgesRanks)
+                maxEdgesRanks = verticesCount;
+        };
+
+        $('#matrixCardinality').text(cardinalityK);
+        $('#maxRank').text(maxEdgesRanks);
+
+        // Find max degree -> the vertex that is touching\part-of the max number of hyperedges
+        var numOfNodes = HGJason.nodes.length;
+        var maxDegree = 0;
+        var countDegrees = 0;
+
+        for (var i = 0; i < numOfNodes; i++) {
+        
+            if(HGJason.nodes[i].HE.length > maxDegree)
+                maxDegree = HGJason.nodes[i].HE.length;
+        };
+
+        $('#maxDegree').text(maxDegree);
+
+    }
+
 
     /**
     ** CONVERSION FUNCTION 
@@ -933,10 +1064,10 @@ $(function() {
             
         }
 
-        for (var i = 0; i < jsonG.nodes.length; i++) {
-            if(jsonG.nodes[0].HE.length == 0)
-                jsonG.nodes.splice(i, 1);
-        };
+        // for (var i = 0; i < jsonG.nodes.length; i++) {
+        //     if(jsonG.nodes[0].HE.length == 0)
+        //         jsonG.nodes.splice(i, 1);
+        // };
 
         //return JSON.stringify(jsonG); // Return the JSON string
         return jsonG;                   // Return the JSON object
