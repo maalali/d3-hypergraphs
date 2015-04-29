@@ -20,9 +20,14 @@
         
         line.link
         {
-            stroke: #999;
+            stroke: black  ;
             stroke-opacity: 1;
         }
+
+        line.nolink {
+            stroke:none;
+        }
+
         body {background-color: linen;}
         
         path {
@@ -507,7 +512,10 @@
                             </td>
                             <td style="text-align: center;">
                                 <input id="btnHGLineGraph" type="button" value="Line Graph" style="width:100%;" />
-                            </td>                                                                               
+                            </td>
+                            <td style="text-align: center;">
+                                <input id="btnHGRestore" type="button" value="Hypergraph" style="width:100%;" />
+                            </td>                                                                                   
 
                         </tr>
                         <tr>

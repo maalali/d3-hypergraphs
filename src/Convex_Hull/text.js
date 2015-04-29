@@ -12,6 +12,9 @@ var r = 6;
 var ndoeAdditionalDistance = 60;    // Used to create longer distance between nodes in different hyperedges
 var incidenceMatrixInput; 
 var hypergraph;
+var hypergraphBackup;
+var twoSecStatus = false;
+var drawHyperedge = true;
 var force = d3.layout.force().size([width, height]);
 var svg = d3.select("#renderingPanel").append("svg").attr("width", width).attr("height", height).attr("transform", "translate(" + width / 2 + "," + height / 2 + ")").style({"padding-top": "9px", "padding-left":"9px"});
 $(function() {
@@ -56,6 +59,7 @@ $(function() {
 
             // Get the matrix\hypergraph data
         hypergraph = incidenceMatrixInput.Matrix;
+        hypergraphBackup = hypergraph;
 
         // Number of rows\Hyperedges
         var numOfRows = hypergraph.length; // Input from user
@@ -65,6 +69,10 @@ $(function() {
 
         // Assign basic ops events
         $('#btnHGDual').click(dual);
+        $('#btnHG2Sec').click(twoSection);
+        $('#btnHGLineGraph').click(lineGraph);
+        $('#btnHGRestore').click(function(){hypergraph = hypergraphBackup; drawHyperedge = true; d3_visualize();});
+
 
         function d3_visualize() {
 
@@ -352,18 +360,26 @@ $(function() {
                // return  parseFloat(d.x).toFixed(2) +","+ parseFloat(d.y).toFixed(2);
             //});
 
-          svg.selectAll("path")
-            .data(groups)
-            .attr("d", groupPath)
-            .enter().insert("path", "g")
-            .style("fill", groupFill)
-            .style("stroke", groupFill)
-            .style("stroke-width", 1)
-            .style("stroke-linejoin", "round")
-            .style("opacity", .2);
+            if(drawHyperedge) {
+              svg.selectAll("path")
+                .data(groups)
+                .attr("d", groupPath)
+                .enter().insert("path", "g")
+                .style("fill", groupFill)
+                .style("stroke", groupFill)
+                .style("stroke-width", 1)
+                .style("stroke-linejoin", "round")
+                .style("opacity", .2);
+
+            } else {
+
+                svg.selectAll("path")
+                .data(groups);
+            }
 
 
         });
+
         d3.select("#gravitySlider").on("input", function() { 
             force.stop();
             var newGravity = document.getElementById('gravitySlider').value;
@@ -446,6 +462,8 @@ $(function() {
 
         }
 
+        // Initial call to start d3 visualization 
+        // Can be removed after file load integration.
         d3_visualize();
 
     function restart() {
@@ -988,6 +1006,86 @@ $(function() {
             HEName = getNewHEName(HEName);
         };
 
+        d3_visualize();
+    }
+
+    // 2-Sec
+    function twoSection() {
+
+        if (twoSecStatus) {
+            
+            link.attr("class", "link");
+            twoSecStatus = false;
+        } else {
+            link.attr("class", "nolink");
+            twoSecStatus = true;
+        }
+            // var oneBar = d3.select(".link")
+            // oneBar.classed(".link", !oneBar.classed(".nolink"));
+    }
+
+
+    // Line graph
+    function lineGraph() {
+
+        var numOfRows = hypergraph.length;
+        var numOfCols = hypergraph[0][1].length;
+        var HGLineGraph = new Array(numOfRows);
+        var dontCheck = [];
+
+        for (var i = 0; i < numOfRows; i++) {
+            
+            // The first col is the hypergraph in relation with itself so it is zero
+            HGLineGraph[i] = [hypergraph[i][0], new Array(numOfRows)];
+            HGLineGraph[i][1][i] = 0;
+        };
+
+        for (var i = 0; i < numOfRows; i++) {
+
+            // No need to check the last one anyways
+            // if (i+1 == numOfRows) break;
+
+            // Each hyperedge will have a row length = the number of hyperedges in the HG
+            //HGLineGraph[i][1] = new Array(numOfRows);
+
+            if(dontCheck.indexOf(i) != -1) {
+             
+                for (var col = 0; col < numOfRows; col++) {
+                    HGLineGraph[i][1][col] = 0;
+                };
+
+                continue;
+            }
+
+            for (var ii = 0; ii < numOfRows; ii++) {
+
+                    if (i == ii) continue;
+                  for (var col = 0; col < numOfCols; col++) {
+
+                    if(hypergraph[i][1][col] == 1 && hypergraph[ii][1][col] == 1) {
+                        HGLineGraph[i][1][ii] = 1;
+                        HGLineGraph[i][1][i] = 1;
+                        dontCheck.push(ii);
+                        break;
+                    }
+
+                    //if (col + 1 == numOfCols) {hypergraph[i][1][ii]};
+                  }
+
+                  if (HGLineGraph[i][1][ii] == undefined) {
+                    HGLineGraph[i][1][ii] = 0;
+                   // HGLineGraph[i][1][i] = 0;
+                }
+            }
+        }
+
+        // Assign the new 
+        hypergraph = HGLineGraph;
+
+        // Enable Line Graph by disabling convex hull drawing
+        drawHyperedge = false;
+
+        // Refresh
         d3_visualize();
     }
 
