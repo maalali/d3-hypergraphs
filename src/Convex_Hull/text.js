@@ -184,7 +184,7 @@ $(function() {
             .offset([-10, 0])
             .html(function (d) {
 
-            return  applicationExample?d.title : "Node: " + d.name + ",  HE: " + d.HE.toString() ;
+            return  applicationExample?d.title : "<span style='color: green;'>Node: </span>" + d.name + ",  <span style='color: green;'>HE</span>: " + d.HE.toString() ;
 
 
         })
@@ -594,6 +594,7 @@ function loadFile(e) {
                 $('#fileName').text(file.name);
                 $('#fileSize').text(file.size + " KB");
 
+                 drawHyperedge = true;
                  d3_visualize();
                  //console.log(incidenceMatrixInput);
             }
