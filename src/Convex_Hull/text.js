@@ -106,7 +106,7 @@ $(function() {
         // APPLICATION EXAMPLE 
         if (applicationExample) {
 
-            HGJason = JSON.parse("{\"nodes\":[{\"name\":\"0\",\"group\":\"0\",\"HE\":[\"a\"],\"fontsize\":\"8px\",\"title\":\"Fred W. Haise\",\"img\":\"http://space.skyrocket.de/img_ast/haise_fred__1.jpg\"},{\"name\":\"1\",\"group\":\"1\",\"HE\":[\"a\"],\"fontsize\":\"8px\",\"title\":\"John L. Swigert\",\"img\":\"http://www.astronautix.com/graphics/i/iswigert.jpg\"},{\"name\":\"2\",\"group\":\"2\",\"HE\":[\"a\",\"b\",\"c\"],\"fontsize\":\"8px\",\"title\":\"James A. Lovell\",\"img\":\"http://www.astronautix.com/graphics/i/ilovellj.jpg\"},{\"name\":\"3\",\"group\":\"3\",\"HE\":[\"b\"],\"fontsize\":\"8px\",\"title\":\"William A. Anders\",\"img\":\"http://astronautscholarship.org/wp-content/uploads/2012/03/William-A-Anders.jpg\"},{\"name\":\"4\",\"group\":\"4\",\"HE\":[\"b\"],\"fontsize\":\"8px\",\"title\":\"Frank F. Borman\",\"img\":\"http://upload.wikimedia.org/wikipedia/commons/d/dc/Frank_Borman.jpg\"},{\"name\":\"5\",\"group\":\"5\",\"HE\":[\"c\"],\"fontsize\":\"8px\",\"title\":\"Edwin E. Aldrin\",\"img\":\"http://space.skyrocket.de/img_ast/aldrin_edwin__1.jpg\"}],\"links\":[{\"source\":0,\"target\":1,\"value\":1},{\"source\":0,\"target\":2,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":0,\"value\":1},{\"source\":2,\"target\":1,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":4,\"value\":1},{\"source\":2,\"target\":5,\"value\":1},{\"source\":3,\"target\":4,\"value\":1}]}");
+            HGJason = JSON.parse("{\"nodes\":[{\"name\":\"0\",\"group\":\"0\",\"HE\":[\"a\"],\"fontsize\":\"18px\",\"title\":\"Fred W. Haise\",\"img\":\"http://space.skyrocket.de/img_ast/haise_fred__1.jpg\"},{\"name\":\"1\",\"group\":\"1\",\"HE\":[\"a\"],\"fontsize\":\"18px\",\"title\":\"John L. Swigert\",\"img\":\"http://www.astronautix.com/graphics/i/iswigert.jpg\"},{\"name\":\"2\",\"group\":\"2\",\"HE\":[\"a\",\"b\",\"c\"],\"fontsize\":\"18px\",\"title\":\"James A. Lovell\",\"img\":\"http://www.astronautix.com/graphics/i/ilovellj.jpg\"},{\"name\":\"3\",\"group\":\"3\",\"HE\":[\"b\"],\"fontsize\":\"18px\",\"title\":\"William A. Anders\",\"img\":\"http://astronautscholarship.org/wp-content/uploads/2012/03/William-A-Anders.jpg\"},{\"name\":\"4\",\"group\":\"4\",\"HE\":[\"b\"],\"fontsize\":\"18px\",\"title\":\"Frank F. Borman\",\"img\":\"http://upload.wikimedia.org/wikipedia/commons/d/dc/Frank_Borman.jpg\"},{\"name\":\"5\",\"group\":\"5\",\"HE\":[\"c\"],\"fontsize\":\"18px\",\"title\":\"Edwin E. Aldrin\",\"img\":\"http://space.skyrocket.de/img_ast/aldrin_edwin__1.jpg\"}],\"links\":[{\"source\":0,\"target\":1,\"value\":1},{\"source\":0,\"target\":2,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":0,\"value\":1},{\"source\":2,\"target\":1,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":4,\"value\":1},{\"source\":2,\"target\":5,\"value\":1},{\"source\":3,\"target\":4,\"value\":1}]}");
 
         } else
         {
@@ -183,7 +183,8 @@ $(function() {
             .attr('class', 'd3-tip') //tooltips   d3-tip
             .offset([-10, 0])
             .html(function (d) {
-            return  d.name;
+
+            return  applicationExample?d.title : "Node: " + d.name + ",  HE: " + d.HE.toString() ;
 
 
         })
@@ -202,7 +203,7 @@ $(function() {
             .enter()
             .append("text")
             .attr("text-anchor", "middle")
-            .attr("dx", 2) // APPLICATION EXAMPLE  
+            .attr("dx", applicationExample? 80:2) // APPLICATION EXAMPLE  
             .attr("dy", ".35em")
             .attr('original-title', function(d) {
             return d.title 
