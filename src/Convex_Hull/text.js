@@ -668,7 +668,7 @@ function loadFile(e) {
     var numOfCols = inputHG[0][1].length;
     
     // Main div container
-    var mainContainerDiv = $('<div></div>').attr("id", "matrixContainer");
+    var mainContainerDiv = $('<div style="width:100px;"></div>').attr("id", "matrixContainer");
     
     // Main table container
     var mainTable = $('<table></table>').attr('id', 'matrixContainerTable');
