@@ -17,6 +17,7 @@ var twoSecStatus = false;
 var drawHyperedge = true;
 var linkStyle = "nolink";
 var nextFocusedCell;
+var applicationExample = false;
 var force = d3.layout.force().size([width, height]);
 var svg = d3.select("#renderingPanel").append("svg").attr("width", width).attr("height", height).attr("transform", "translate(" + width / 2 + "," + height / 2 + ")").style({"padding-top": "9px", "padding-left":"9px"});
 $(function() {
@@ -80,8 +81,10 @@ $(function() {
         $('#attractionInput').val($('#attractionSlider').val());
         $('#gravityInput').val($('#gravitySlider').val());
         $('#repulsionInput').val($('#repulsionSlider').val());
+        $('#btnApplicationExample').click(function(e){applicationExample? applicationExample = false:applicationExample = true; d3_visualize();});
 
         function d3_visualize() {
+
 
         $("#renderingPanel").html('');
 
@@ -99,8 +102,16 @@ $(function() {
         //var HGJason = "{\"nodes\":[{\"name\":\"0\",\"group\":\"0\",\"HE\":[\"a\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"1\",\"group\":\"1\",\"HE\":[\"a\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"2\",\"group\":\"2\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"3\",\"group\":\"3\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"4\",\"group\":\"4\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"5\",\"group\":\"5\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"6\",\"group\":\"6\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"7\",\"group\":\"7\",\"HE\":[\"c\"],\"fontsize\":\"45px\",\"title\":null},{\"name\":\"8\",\"group\":\"8\",\"HE\":[\"c\"],\"fontsize\":\"45px\",\"title\":null}],\"links\":[{\"source\":0,\"target\":1,\"value\":1},{\"source\":0,\"target\":2,\"value\":1},{\"source\":0,\"target\":3,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":4,\"value\":1},{\"source\":2,\"target\":5,\"value\":1},{\"source\":2,\"target\":6,\"value\":1},{\"source\":3,\"target\":4,\"value\":1},{\"source\":3,\"target\":5,\"value\":1},{\"source\":3,\"target\":6,\"value\":1},{\"source\":4,\"target\":5,\"value\":1},{\"source\":4,\"target\":6,\"value\":1},{\"source\":5,\"target\":6,\"value\":1},{\"source\":4,\"target\":5,\"value\":1},{\"source\":4,\"target\":6,\"value\":1},{\"source\":4,\"target\":7,\"value\":1},{\"source\":4,\"target\":8,\"value\":1},{\"source\":5,\"target\":6,\"value\":1},{\"source\":5,\"target\":7,\"value\":1},{\"source\":5,\"target\":8,\"value\":1},{\"source\":6,\"target\":7,\"value\":1},{\"source\":6,\"target\":8,\"value\":1},{\"source\":7,\"target\":8,\"value\":1}]}";
         //var HGJason = "{\"nodes\":[{\"name\":\"0\",\"group\":\"0\",\"HE\":[\"a\"],\"fontsize\":\"10px\",\"title\":null},{\"name\":\"1\",\"group\":\"1\",\"HE\":[\"a\"],\"fontsize\":\"10px\",\"title\":null},{\"name\":\"2\",\"group\":\"2\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"10px\",\"title\":null},{\"name\":\"3\",\"group\":\"3\",\"HE\":[\"a\",\"b\"],\"fontsize\":\"10px\",\"title\":null},{\"name\":\"4\",\"group\":\"4\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"10px\",\"title\":null},{\"name\":\"5\",\"group\":\"5\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"10px\",\"title\":null},{\"name\":\"6\",\"group\":\"6\",\"HE\":[\"b\",\"c\"],\"fontsize\":\"10px\",\"title\":null},{\"name\":\"7\",\"group\":\"7\",\"HE\":[\"c\"],\"fontsize\":\"10px\",\"title\":null},{\"name\":\"8\",\"group\":\"8\",\"HE\":[\"c\"],\"fontsize\":\"10px\",\"title\":null}],\"links\":[{\"source\":0,\"target\":1,\"value\":1},{\"source\":0,\"target\":2,\"value\":1},{\"source\":0,\"target\":3,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":4,\"value\":1},{\"source\":2,\"target\":5,\"value\":1},{\"source\":2,\"target\":6,\"value\":1},{\"source\":3,\"target\":4,\"value\":1},{\"source\":3,\"target\":5,\"value\":1},{\"source\":3,\"target\":6,\"value\":1},{\"source\":4,\"target\":5,\"value\":1},{\"source\":4,\"target\":6,\"value\":1},{\"source\":5,\"target\":6,\"value\":1},{\"source\":4,\"target\":5,\"value\":1},{\"source\":4,\"target\":6,\"value\":1},{\"source\":4,\"target\":7,\"value\":1},{\"source\":4,\"target\":8,\"value\":1},{\"source\":5,\"target\":6,\"value\":1},{\"source\":5,\"target\":7,\"value\":1},{\"source\":5,\"target\":8,\"value\":1},{\"source\":6,\"target\":7,\"value\":1},{\"source\":6,\"target\":8,\"value\":1},{\"source\":7,\"target\":8,\"value\":1}]}";
 
-        HGJason  = flattenMatrix(hypergraph);
 
+        // APPLICATION EXAMPLE 
+        if (applicationExample) {
+
+            HGJason = JSON.parse("{\"nodes\":[{\"name\":\"0\",\"group\":\"0\",\"HE\":[\"a\"],\"fontsize\":\"8px\",\"title\":\"Fred W. Haise\",\"img\":\"http://space.skyrocket.de/img_ast/haise_fred__1.jpg\"},{\"name\":\"1\",\"group\":\"1\",\"HE\":[\"a\"],\"fontsize\":\"8px\",\"title\":\"John L. Swigert\",\"img\":\"http://www.astronautix.com/graphics/i/iswigert.jpg\"},{\"name\":\"2\",\"group\":\"2\",\"HE\":[\"a\",\"b\",\"c\"],\"fontsize\":\"8px\",\"title\":\"James A. Lovell\",\"img\":\"http://www.astronautix.com/graphics/i/ilovellj.jpg\"},{\"name\":\"3\",\"group\":\"3\",\"HE\":[\"b\"],\"fontsize\":\"8px\",\"title\":\"William A. Anders\",\"img\":\"http://astronautscholarship.org/wp-content/uploads/2012/03/William-A-Anders.jpg\"},{\"name\":\"4\",\"group\":\"4\",\"HE\":[\"b\"],\"fontsize\":\"8px\",\"title\":\"Frank F. Borman\",\"img\":\"http://upload.wikimedia.org/wikipedia/commons/d/dc/Frank_Borman.jpg\"},{\"name\":\"5\",\"group\":\"5\",\"HE\":[\"c\"],\"fontsize\":\"8px\",\"title\":\"Edwin E. Aldrin\",\"img\":\"http://space.skyrocket.de/img_ast/aldrin_edwin__1.jpg\"}],\"links\":[{\"source\":0,\"target\":1,\"value\":1},{\"source\":0,\"target\":2,\"value\":1},{\"source\":1,\"target\":2,\"value\":1},{\"source\":1,\"target\":0,\"value\":1},{\"source\":2,\"target\":1,\"value\":1},{\"source\":2,\"target\":3,\"value\":1},{\"source\":2,\"target\":4,\"value\":1},{\"source\":2,\"target\":5,\"value\":1},{\"source\":3,\"target\":4,\"value\":1}]}");
+
+        } else
+        {
+            HGJason  = flattenMatrix(hypergraph);
+        }
        // HGJason = htmlDecode(HGJason);
 
         //HGJason = $.parseJSON(HGJason);
@@ -123,10 +134,31 @@ $(function() {
             .friction(0.9)
             .start();
 
-        node = svg.selectAll(".node").data(HGJason.nodes).enter().append("g").attr("class", "node").attr("hyperedges", function(d) {
+        node = svg.selectAll(".node")
+                    .data(HGJason.nodes)
+                    .enter()
+                    .append("g")
+                    .attr("class", "node")
+                    .attr("hyperedges", function(d) {
             return (d.HE)
-        }).attr('name', function(d) { return d.name;});
-        link = svg.selectAll(".link").data(HGJason.links).enter().append("line").attr("class", linkStyle).style("stroke-opacity", "0.2");
+                    }).attr('name', function(d) { return d.name;})
+                    .attr('detail', function(d) { return d.detail;}); // APPLICATION EXAMPLE  
+
+
+
+
+        link = svg.selectAll(".link")
+                .data(HGJason.links)
+                .enter()
+                .append("line")
+                .attr("class", linkStyle)
+                .style("stroke-opacity", "0.2");
+
+        // APPLICATION EXAMPLE 
+        if(applicationExample) 
+            link.attr("class", "link");
+
+
 
         node.append('circle').attr('r', function(d) {
             var tmprad = parseInt(d.fontsize.replace('px', '')) * (d.name.length / 3);
@@ -136,16 +168,28 @@ $(function() {
             return color(d.group)
         });
 
+
+        // APPLICATION EXAMPLE  
+        // Append images 
+           node.append("svg:image")
+                .attr("xlink:href",  function(d) { return d.img;})
+                .attr("x", function(d) { return -25;})
+                .attr("y", function(d) { return -25;})
+                .attr("height", 50)
+                .attr("width", 50);
+
             //Set up tooltip
         var tip = d3.tip()
             .attr('class', 'd3-tip') //tooltips   d3-tip
             .offset([-10, 0])
             .html(function (d) {
-            return  d.name + "";
+            return  d.name;
 
 
         })
         svg.call(tip);
+
+
         
         var node_drag = d3.behavior.drag()
         .on("dragstart", dragstart)
@@ -153,25 +197,41 @@ $(function() {
         .on("dragend", dragend);
    
     
-        node.selectAll('text').data(HGJason.nodes).enter().append("text").attr("text-anchor", "middle").attr("dx", 2).attr("dy", ".35em").attr('original-title', function(d) {
-            return d.title
-        }).attr("style", function(d) {
+        node.selectAll('text')
+            .data(HGJason.nodes)
+            .enter()
+            .append("text")
+            .attr("text-anchor", "middle")
+            .attr("dx", 2) // APPLICATION EXAMPLE  
+            .attr("dy", ".35em")
+            .attr('original-title', function(d) {
+            return d.title 
+            })
+            .attr("style", function(d) {
             return "font-size:" + d.fontsize
-        }).text(function(d) {
+            })
+            .text(function(d) {
            // console.log(d);
-            return d.name
+           
+           // APPLICATION EXAMPLE  
+            if(applicationExample)
+                return d.title;
+            else 
+                return d.name
             //return d.x + ',' + d.y;
-        }).attr("style", function(d) {
+            })
+            .attr("style", function(d) {
             return "font-size:" + d.fontsize
-        })/*.style('fill', function(d) {
+            })/*.style('fill', function(d) {
             return color(d.group);
-        })*/.style("cursor", "pointer")
-        .call(force.drag)
-        .on('mouseover', tip.show)
-        .on('mouseout', tip.hide)
-        .on('dblclick', releasenode)
-        .on('click', connectedNodes) //Double-click on a node to fade out all but its immediate neighbours. 
-        .call(node_drag);
+            })*/.style("cursor", "pointer")
+            .call(force.drag)
+            .on('mouseover', tip.show)
+            .on('mouseout', tip.hide)
+            .on('dblclick', releasenode)
+            .on('click', connectedNodes) //Double-click on a node to fade out all but its immediate neighbours. 
+            .call(node_drag);
+
 
         var cx = new Array();
         var cy = new Array();
@@ -354,6 +414,11 @@ $(function() {
             // reposition text
             // Same as the above node's transformation 
             node.selectAll('text').attr("transform", function(d) {
+                return "translate(" + d.x + "," + d.y + ")"
+            });
+
+            // APPLICATION EXAMPLE
+            node.selectAll('image').attr("transform", function(d) {
                 return "translate(" + d.x + "," + d.y + ")"
             });
 
