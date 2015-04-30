@@ -9,16 +9,20 @@ var width = $('#renderingPanel').width() - 20,
 //     height = window.innerHeight - 10;
 var color = d3.scale.category10();
 var r = 6;
-var ndoeAdditionalDistance = 60;    // Used to create longer distance between nodes in different hyperedges
+var ndoeAdditionalDistance = 15;    // Used to create longer distance between nodes in different hyperedges
 var incidenceMatrixInput; 
 var hypergraph;
 var hypergraphBackup;
 var twoSecStatus = false;
 var drawHyperedge = true;
+var linkStyle = "nolink";
+var nextFocusedCell;
 var force = d3.layout.force().size([width, height]);
 var svg = d3.select("#renderingPanel").append("svg").attr("width", width).attr("height", height).attr("transform", "translate(" + width / 2 + "," + height / 2 + ")").style({"padding-top": "9px", "padding-left":"9px"});
 $(function() {
 
+
+    
         // // Example #2
         // var incidenceMatrixInput = {
         //     "V":5,
@@ -72,7 +76,10 @@ $(function() {
         $('#btnHG2Sec').click(twoSection);
         $('#btnHGLineGraph').click(lineGraph);
         $('#btnHGRestore').click(function(){hypergraph = hypergraphBackup; drawHyperedge = true; d3_visualize();});
-
+        $('#btnBrowse').change(loadFile);
+        $('#attractionInput').val($('#attractionSlider').val());
+        $('#gravityInput').val($('#gravitySlider').val());
+        $('#repulsionInput').val($('#repulsionSlider').val());
 
         function d3_visualize() {
 
@@ -119,7 +126,7 @@ $(function() {
         node = svg.selectAll(".node").data(HGJason.nodes).enter().append("g").attr("class", "node").attr("hyperedges", function(d) {
             return (d.HE)
         }).attr('name', function(d) { return d.name;});
-        link = svg.selectAll(".link").data(HGJason.links).enter().append("line").attr("class", "link").style("stroke-opacity", "0.2");
+        link = svg.selectAll(".link").data(HGJason.links).enter().append("line").attr("class", linkStyle).style("stroke-opacity", "0.2");
 
         node.append('circle').attr('r', function(d) {
             var tmprad = parseInt(d.fontsize.replace('px', '')) * (d.name.length / 3);
@@ -256,7 +263,7 @@ $(function() {
         }));
         if(corners.length == 0) {return "";}
         
-        console.log(corners);
+        //console.log(corners);
         var x1 = parseInt(corners[corners.length - 1][0]);
         var y1 = parseInt(corners[corners.length - 1][1]);
         var x2 = parseInt(corners[0][0]);
@@ -292,7 +299,7 @@ $(function() {
             
             ret += "A "+r1+" "+r1+" 1 0 0 "+x1p+","+y1p+"L"+x2p+","+y2p;
             
-            console.log(ret); 
+            //console.log(ret); 
         }
         return ret;
     //return corners;
@@ -364,7 +371,7 @@ $(function() {
                 .style("stroke", groupFill)
                 .style("stroke-width", 1)
                 .style("stroke-linejoin", "round")
-                .style("opacity", .2);
+                .style("opacity", 0.2);
 
             } else {
 
@@ -482,27 +489,89 @@ $(function() {
         // Can be removed after file load integration.
         d3_visualize();
 
-    function restart() {
+ // Load JSON file
+function loadFile(e) {
 
-        force.nodes([]);
-        force.links([]);
+    ////////// start of reading JSON file ///////////////
 
-        link = link.data(HGJason.links);
-        link.exit().remove();
-        link.enter().insert("line").attr("class", "link").style("stroke-opacity", "0.2");
+     //var fileInput = document.getElementById('fileInput');
+    var file = this.files[0];
+    var textType = /json.*/;
+    var json_text;
 
-        node = node.data(HGJason.nodes);
-        //node.exit().remove();
-        node.enter().insert("circle", ".cursor").attr("class", "node").attr("r", 5).call(force.drag);
+    $(txtFilePath).val(file.name);
+
+        // if (file.type.match(textType))
+        if (file.name.split('.')[1].match(textType))
+        {
+
+            //alert("file type matched!");
+            var reader = new FileReader();
+
+            reader.onload = function(e)
+            {
+               // fileDisplayArea.innerText = reader.result.toString();
+
+                json_text=reader.result;
+                //json=reader.result;
+                //alert("fileDisplayArea got the text!");
+                //console.log(json_text);
+            }
+            reader.onloadend = function(e){
 
 
-        node.enter().insert("g").attr("class", "node").attr("hyperedges", function(d) {
-            return (d.HE)
-        }).attr('name', function(d) { return d.name;});
+                 incidenceMatrixInput = JSON.parse(json_text);
+                 hypergraph = incidenceMatrixInput.Matrix;
+                 hypergraphBackup = hypergraph;
+
+                // Update file info
+                $('#fileName').text(file.name);
+                $('#fileSize').text(file.size + " KB");
+
+                 d3_visualize();
+                 //console.log(incidenceMatrixInput);
+            }
+            reader.onerror = function(e) {
+                $(txtFilePath).val("Encountered an error!");
+            }
+            reader.readAsText(file);
+
+        }
+        else
+        {
+            $(txtFilePath).val("File not supported!");
+        }
+
+           
+
+            //d3_visualize();
+
+////////// end of reading JSON file ///////////////
+}
+
+
+
+    // function restart() {
+
+    //     force.nodes([]);
+    //     force.links([]);
+
+    //     link = link.data(HGJason.links);
+    //     link.exit().remove();
+    //     link.enter().insert("line").attr("class", "link").style("stroke-opacity", "0.2");
+
+    //     node = node.data(HGJason.nodes);
+    //     //node.exit().remove();
+    //     node.enter().insert("circle", ".cursor").attr("class", "node").attr("r", 5).call(force.drag);
+
+
+    //     node.enter().insert("g").attr("class", "node").attr("hyperedges", function(d) {
+    //         return (d.HE)
+    //     }).attr('name', function(d) { return d.name;});
 
  
-        force.start();
-    }
+    //     force.start();
+    // }
 
 
     function createMatrixTable(hg) {
@@ -802,7 +871,7 @@ $(function() {
                     inputHG[$(source).attr('row')][1][$(source).attr('col')] = parseInt($(source).val());
 
                     //console.log($(source).attr('row') + ',' + $(source).attr('col'));
-                    console.log(inputHG);
+                    //console.log(inputHG);
             break;
         }
     }
@@ -976,8 +1045,7 @@ $(function() {
 
                                     d3_visualize();
 
-                                    var nextFocusedCell = parseInt($(this).attr('col')) + 1;
-                                    $(this).parent().parent().children().eq(nextFocusedCell).children().eq(0).focus();
+                                    nextFocusedCell = $(this).parent().parent().children().eq(parseInt($(this).attr('col')) + 1).children().eq(0);
                                     //console.log($(this).parent().parent().children().eq(nextFocusedCell).children().eq(0));
                                     // Flatten
                                     //HGJason  = flattenMatrix(hypergraph);
@@ -1029,12 +1097,17 @@ $(function() {
     function twoSection() {
 
         if (twoSecStatus) {
-            
-            link.attr("class", "link");
+                        
+            linkStyle = "nolink";
             twoSecStatus = false;
+            drawHyperedge = true;
+            d3_visualize();
+        
         } else {
-            link.attr("class", "nolink");
+            linkStyle = "link";
             twoSecStatus = true;
+            drawHyperedge = false;
+            d3_visualize();
         }
             // var oneBar = d3.select(".link")
             // oneBar.classed(".link", !oneBar.classed(".nolink"));
@@ -1187,7 +1260,7 @@ $(function() {
                 // Each vertex name is a number starting from 1 to |V|
                 if(jsonG.nodes[col] == undefined) {
                     
-                    jsonG.nodes[col] = {"name": (col).toString() , "group": (col).toString(), "HE": [], "fontsize":"35px", "title":null};
+                    jsonG.nodes[col] = {"name": (col).toString() , "group": (col).toString(), "HE": [], "fontsize":"35px", "title":null,};
                 
                  } 
                 
@@ -1232,6 +1305,7 @@ $(function() {
   
 });
 
+
 function htmlEncode(value) {
     return $('<div/>').text(value).html();
 }
@@ -1248,10 +1322,10 @@ function htmlDecode(value) {
 var toggle = 0;
 //Create an array logging what is connected to what
 var linkedByIndex = {};
-for (i = 0; i < graph.nodes.length; i++) {
+for (i = 0; i < HGJason.nodes.length; i++) {
     linkedByIndex[i + "," + i] = 1;
 };
-graph.links.forEach(function (d) {
+HGJason.links.forEach(function (d) {
     linkedByIndex[d.source.index + "," + d.target.index] = 1;
 });
 //This function looks up whether a pair are neighbours

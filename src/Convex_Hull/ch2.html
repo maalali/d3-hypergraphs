@@ -200,6 +200,7 @@
         height: 150px;
         width: 100%;
         color: white;
+        text-align: center;
     }
     
     #renderingPanel {
@@ -225,7 +226,7 @@
         float: right;
     }
     
-    #loadFileContainer, #forceControlContainer, #themeContainer {
+    #loadFileContainer, #forceControlContainer,  #themeContainer {
         height: auto;
         width: 100%;
         margin-top: 93px;
@@ -303,7 +304,7 @@
     }
 
     #loadFileContent, #forceControlContent,
-    #matrixStatsContent, #moreInteractionContent, #themeContent {
+    #matrixStatsContent, #moreInteractionContent, #themeContent  {
         height: 100px;
         //background-color: Gray;
     }
@@ -337,14 +338,15 @@
         width: 130px;
     }
     
+     #dark-theme, #light-theme {
+        margin-top: 10px;
+        width: 150px;
+    }
+
     #btnBrowse {
         margin-top: 10px;
         width: 70px;
-    }
-    
-    #dark-theme, #light-theme {
-        margin-top: 10px;
-        width: 150px;
+        font-size: 10px;
     }
     
     #fileInfoTable,
@@ -408,7 +410,7 @@
                 <div id="loadFileHeader">Load Matrix</div>
                 <div id="loadFileContent">
                     <input id="txtFilePath" type="text" readonly="readonly" />
-                    <input id="btnBrowse" type="button" value="Browse..." />
+                    <input id="btnBrowse" type="file" />
                     <table id="fileInfoTable">
                         <tr>
                             <td colspan="2" rowspan="0">File Info</td>
@@ -416,11 +418,11 @@
                         <tr style="height: 10px;"></tr>
                         <tr>
                             <td width="35%">File Name</td>
-                            <td width="65%" style="text-align: center">data.json</td>
+                            <td id="fileName" width="65%" style="text-align: center">--</td>
                         </tr>
                         <tr>
                             <td width="35%">File Szie</td>
-                            <td width="65%" style="text-align: center"># KB</td>
+                            <td id="fileSize" width="65%" style="text-align: center">--</td>
                         </tr>
                     </table>
                 </div>
@@ -456,7 +458,7 @@
                     </table>
                 </div>
             </div>
-            <div id="themeContainer">
+                <div id="themeContainer">
                 <div id="themeHeader">Themes</div>
                 <div id="themeContent" style="text-align: center;" >
                     <input id="dark-theme" type="button" value="Dark" />
@@ -465,7 +467,10 @@
             </div>
         </div>
         <div id="midContainer">
-            <div id="topPanel">Top</div>
+            <div id="topPanel">
+                <div style="font-size: 50px;font-family: fantasy; ">Banana Papper</div> 
+                <div style="font-family: monospace;">Hypergraphs Visualization Tool</div>
+            </div>
             <div id="renderingPanel"></div>
             <div id="bottomPanel">
                 <div id="matrixEditContainer">
@@ -579,7 +584,7 @@
                             <td>
                                 <form>
                                     <div>
-                                        <input id="attractionSlider" type="range" min="1" max="600" step="1" value="140" />
+                                        <input id="attractionSlider" type="range" min="1" max="600" step="1" value="40" />
                                     </div>
                                     <div>
                                         <input type="text" id="attractionInput" value="140" readonly="readonly" />
