@@ -9,13 +9,18 @@ var width = $('#renderingPanel').width() - 20,
 //     height = window.innerHeight - 10;
 var color = d3.scale.category10();
 var r = 6;
-var ndoeAdditionalDistance = 15;    // Used to create longer distance between nodes in different hyperedges
+var ndoeAdditionalDistance = 45;    // Used to create longer distance between nodes in different hyperedges
 var incidenceMatrixInput; 
 var hypergraph;
 var hypergraphBackup;
 var twoSecStatus = false;
 var drawHyperedge = true;
 var linkStyle = "nolink";
+var linkStroke = "none";
+// var linkStyle = "link";
+// linkStroke = function(d) {
+//             return color(d.source.group)
+//             };
 var nextFocusedCell;
 var applicationExample = false;
 var force = d3.layout.force().size([width, height]);
@@ -35,7 +40,7 @@ $(function() {
         //                 ]
         // };
 
-        // Example #3
+        //Example #3
         incidenceMatrixInput = {
             "V":9,
             "E":2,
@@ -46,6 +51,15 @@ $(function() {
                             ["c", [ 0, 0, 0, 0, 1, 1, 1, 1, 1 ]]
                         ]
         };
+
+        // incidenceMatrixInput = {
+        //     "V":9,
+        //     "E":2,
+        //     "K":14,
+        //     "Matrix":[
+        //                     ["a", [ 1,1]]
+        //                 ]
+        // };
 
        // // Example #1
        //  incidenceMatrixInput = {
@@ -76,7 +90,7 @@ $(function() {
         $('#btnHGDual').click(dual);
         $('#btnHG2Sec').click(twoSection);
         $('#btnHGLineGraph').click(lineGraph);
-        $('#btnHGRestore').click(function(){hypergraph = hypergraphBackup; drawHyperedge = true; d3_visualize();});
+        $('#btnHGRestore').click(function(){hypergraph = hypergraphBackup; drawHyperedge = true; linkStyle="nolink"; linkStroke = "none"; twoSecStatus = false; d3_visualize();});
         $('#btnBrowse').change(loadFile);
         $('#attractionInput').val($('#attractionSlider').val());
         $('#gravityInput').val($('#gravitySlider').val());
@@ -152,7 +166,8 @@ $(function() {
                 .enter()
                 .append("line")
                 .attr("class", linkStyle)
-                .style("stroke-opacity", "0.2");
+                .style("stroke-opacity", "0.2")
+                .style('stroke', linkStroke);
 
         // APPLICATION EXAMPLE 
         if(applicationExample) 
@@ -165,7 +180,8 @@ $(function() {
             if (tmprad > r) r = tmprad;
             return tmprad;
         }).style('fill', '#ffffff').style('stroke', function(d) {
-            return color(d.group)
+            //console.log(d);
+            return color(d.group);
         });
 
 
@@ -322,9 +338,25 @@ $(function() {
         var corners = d3.geom.hull(data.values.map(function(i) {
             return [$(i).attr("cx"), $(i).attr("cy")];
         }));
-        if(corners.length == 0) {return "";}
         
-        //console.log(corners);
+        // Darw an edge for two vertices
+        // d3.geom.hull does not produce a result when we supplied with less than three vertices 
+        // So this is a workaround for it
+        if(data.values.length == 2) {
+
+          corners = data.values.map(function(i) {
+            return [$(i).attr("cx"), $(i).attr("cy")];
+            });
+        } 
+        //else if(data.values.length == 1) { //We should handle drawing one edge over one vertex only by just drawing a rectangle or a circle
+        //}  
+        else{
+
+            if(corners.length == 0) {return "";}
+        }
+
+        // console.log(corners);
+
         var x1 = parseInt(corners[corners.length - 1][0]);
         var y1 = parseInt(corners[corners.length - 1][1]);
         var x2 = parseInt(corners[0][0]);
@@ -432,12 +464,15 @@ $(function() {
               svg.selectAll("path")
                 .data(groups)
                 .attr("d", groupPath)
-                .enter().insert("path", "g")
+                .enter().insert("path", "g", "text")
                 .style("fill", groupFill)
-                .style("stroke", groupFill)
+                //.style("stroke", groupFill)
+                .style("stroke", "Black")
                 .style("stroke-width", 1)
                 .style("stroke-linejoin", "round")
                 .style("opacity", 0.2);
+
+//                 console.log(groups);
 
             } else {
 
@@ -595,6 +630,8 @@ function loadFile(e) {
                 $('#fileSize').text(file.size + " KB");
 
                  drawHyperedge = true;
+                 linkStyle = "nolink";
+                 linkStroke = "none";
                  d3_visualize();
                  //console.log(incidenceMatrixInput);
             }
@@ -1157,6 +1194,18 @@ function loadFile(e) {
             HEName = getNewHEName(HEName);
         };
 
+        if (numOfCols < 4) {
+            linkStyle="link";
+            linkStroke = function(d) {
+            return color(d.source.group)
+            };
+        }
+        else { 
+
+            linkStroke = "none";
+            linkStyle = "nolink";
+        }
+
         d3_visualize();
     }
 
@@ -1166,12 +1215,17 @@ function loadFile(e) {
         if (twoSecStatus) {
                         
             linkStyle = "nolink";
+            linkStroke = "none";
             twoSecStatus = false;
             drawHyperedge = true;
             d3_visualize();
         
         } else {
             linkStyle = "link";
+            linkStroke = function(d) {
+            return color(d.source.group)
+            };
+
             twoSecStatus = true;
             drawHyperedge = false;
             d3_visualize();
@@ -1240,6 +1294,14 @@ function loadFile(e) {
 
         // Enable Line Graph by disabling convex hull drawing
         drawHyperedge = false;
+
+        // if(hypergraph[0][1].length < 4)
+            linkStyle = "link";
+            linkStroke = function(d) {
+            return color(d.source.group)
+            };
+        // else
+        //     linkStyle = "nolink";
 
         // Refresh
         d3_visualize();

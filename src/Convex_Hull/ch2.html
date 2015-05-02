@@ -166,7 +166,8 @@
     
     #leftPanel {
         background-color: rgb(61, 61, 61);
-        width: 300px;
+        width: 225px;
+        min-width: 225px;
         height: 100%;
         color: white;
         float: left;
@@ -221,7 +222,8 @@
     #rightPanel {
         background-color: rgb(61, 61, 61);
         height: 100%;
-        width: 300px;
+        width: 225px;
+        min-width: 225px;
         color: white;
         float: right;
     }
@@ -350,6 +352,12 @@
         font-size: 10px;
     }
     
+    #fileInfoTable {
+
+        width:200px;
+        min-width: 200px;
+    }
+
     #fileInfoTable,
     #matrixStatsTable,  #HGOperationsTable {
         margin-top: 10px;
@@ -556,7 +564,9 @@
             </div>
         </div>
         <div id="rightPanel">
+        
             <div id="rightPanelBorder"></div>
+            <div>
             <div id="forceControlContainer">
                 <div id="forceControlHeader">Force Control</div>
                 <div id="forceControlContent">
@@ -622,6 +632,7 @@
                 <div id="moreInteractionContent">
                 </div>
             </div> -->
+        </div>
         </div>
     </div>
 </body>
